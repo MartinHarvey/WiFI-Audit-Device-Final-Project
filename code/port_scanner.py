@@ -1,22 +1,16 @@
 import socket
-import os
 import sys
-import argparse
+import ipaddress
 from icmplib import ping
 
-def port_scan(args):
-    try:
-        target     = args[1]
-        start_port = int(args[2])
-        end_port   = int(args[3])
-    except IndexError:
-        print("Require an ip address, a start port, and a end port")
-        exit()
-    
-    for port in range(start_port, end_port):
+def port_scan(target, start_port, end_port):
+    ports_found = 0
+    #iterate across every port between the start port and end port
+    for port in range(start_port, (end_port+1)):
         scan_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         scan_socket.settimeout(5)
         if(scan_socket.connect_ex((target, port)) == 0):
+            ports_found += 1
             try:
                 port_type = socket.getservbyport(port, 'tcp')
                 print("[!]Open Port - " + str(port) + "/TCP. Commonly used for " + port_type)
@@ -35,7 +29,9 @@ def port_scan(args):
             except OSError:
                 print("[!]Open Port - " + str(port) + "/TCP. This port is not standard for any common protocol")
         scan_socket.close()
+    print("Total No of ports found: " + str(ports_found))
 
+#Makes a GET request to the root directory of the website and displays
 def http_banner(target, port):
     host = target + ":" + str(port)
     req_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,27 +43,42 @@ def http_banner(target, port):
     for line in resp:
         print(line)
 
+#Works for FTP and SSH so far. Just connects and waits for 4096 bytes of a response
 def generic_banner(target, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((target, port))
     response = sock.recv(4096).decode()
     print(response)
 
+#On test VM response is garbled but seems to be valid UTF-16
+#Otherwise similar to generic_banner()
 def telnet_banner(target, port):
     telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     telnet_socket.connect((target, port))
-    response = telnet_socket.recv(4096).decode("UTF-16")
+    response = telnet_socket.recv(1096)
     print(response)
 
 
 def main(args): 
-    target = sys.argv[1]
-    if(ping(target)):
-        print("Host online")
-        
-        port_scan(args)
-    else:
-        print("Host not responding")
+    try:
+        target = sys.argv[1]
+        start_port = int(args[2])
+        end_port   = int(args[3])
+    except IndexError:
+        print("Require an ip address, a start port, and a end port")
         exit()
-
+    # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
+    # CIRD_hosts is empty, then the input (target) is a single IP address 
+    CIDR_hosts = list(ipaddress.ip_network(target).hosts())
+    if(CIDR_hosts != []):
+        for addr in CIDR_hosts:
+            addr = str(addr)
+            # Check if host is online by pinging it and run a port scan if so
+            if(ping(addr).is_alive):
+                print(addr + " is online")
+                port_scan(addr, start_port, end_port)
+    else:
+        if(ping(target).is_alive):
+                print(target + " is online")
+                port_scan(target, start_port, end_port)
 main(sys.argv)
