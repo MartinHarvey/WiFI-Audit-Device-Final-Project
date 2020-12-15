@@ -14,7 +14,7 @@ def port_scan(target, start_port, end_port):
             try:
                 port_type = socket.getservbyport(port, 'tcp')
                 print("[!]Open Port - " + str(port) + "/TCP. Commonly used for " + port_type)
-                if("http" in port_type):
+                if("http" in port_type and "https" not in port_type):
                     print("[*]Banner grabbing over HTTP")
                     http_banner(target, port)
                 if("ftp" in port_type):
@@ -67,8 +67,13 @@ def main(args):
     except IndexError:
         print("Require an ip address, a start port, and a end port")
         exit()
+    try:
+        output_file = sys.argv[4]
+        sys.stdout = open(output_file, 'w')
+    except IndexError:
+        pass
     # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
-    # CIRD_hosts is empty, then the input (target) is a single IP address 
+    # CIDR_hosts is empty, then the input (target) is a single IP address 
     CIDR_hosts = list(ipaddress.ip_network(target).hosts())
     if(CIDR_hosts != []):
         for addr in CIDR_hosts:
