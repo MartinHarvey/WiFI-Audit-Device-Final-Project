@@ -1,6 +1,9 @@
+#!/usr/bin/python3
 import socket
 import sys
 import ipaddress
+import threading
+import time
 from icmplib import ping
 
 def port_scan(target, start_port, end_port):
@@ -27,11 +30,12 @@ def port_scan(target, start_port, end_port):
                     print("[*]Banner grabbing over SSH")
                     generic_banner(target, port)
             except OSError:
+                #getservbyport returns an OSError exception if it doesnt recognise the port
                 print("[!]Open Port - " + str(port) + "/TCP. This port is not standard for any common protocol")
         scan_socket.close()
     print("Total No of ports found: " + str(ports_found))
 
-#Makes a GET request to the root directory of the website and displays
+#Makes a GET request to the root directory of the website and parses/displays response
 def http_banner(target, port):
     host = target + ":" + str(port)
     req_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,6 +64,7 @@ def telnet_banner(target, port):
 
 
 def main(args): 
+    start = time.time()
     try:
         target = sys.argv[1]
         start_port = int(args[2])
@@ -67,23 +72,39 @@ def main(args):
     except IndexError:
         print("Require an ip address, a start port, and a end port")
         exit()
+    #Get the file to redirect the output to if the user has supplied a path
     try:
         output_file = sys.argv[4]
         sys.stdout = open(output_file, 'w')
     except IndexError:
+        #stdout will already be normal stdout, so no need to do anything
         pass
     # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
     # CIDR_hosts is empty, then the input (target) is a single IP address 
     CIDR_hosts = list(ipaddress.ip_network(target).hosts())
     if(CIDR_hosts != []):
         for addr in CIDR_hosts:
+            #Each address in CIDR_hosts is not stored as a string, and since we need to use strings, we convert
             addr = str(addr)
             # Check if host is online by pinging it and run a port scan if so
             if(ping(addr).is_alive):
                 print(addr + " is online")
-                port_scan(addr, start_port, end_port)
+                #Extra code that can make the program wait for the last port scan to finish
+                #before beginning the next port scan on the new host. Unsure if it makes any
+                #difference, so its currently commmented out. More research required
+                '''
+                try:
+                    scan_thread.join()
+                except:
+                    pass
+                '''
+                #Create a new thread to run the port scan in the background
+                scan_thread = threading.Thread(target=port_scan, args=(addr, start_port, end_port,))
+                scan_thread.start()
     else:
         if(ping(target).is_alive):
                 print(target + " is online")
                 port_scan(target, start_port, end_port)
+    end = time.time()
+    print("Time Taken " + str(end - start))
 main(sys.argv)
