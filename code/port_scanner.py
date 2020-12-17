@@ -55,11 +55,12 @@ def generic_banner(target, port):
     print(response)
 
 #On test VM response is garbled but seems to be valid UTF-16
-#Otherwise similar to generic_banner()
+#Otherwise similar to generic_banner(). Other telnet services online return
+#do not work with UTF-16. Going to use raw bytes for now
 def telnet_banner(target, port):
     telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     telnet_socket.connect((target, port))
-    response = telnet_socket.recv(1096)
+    response = telnet_socket.recv(1024)
     print(response)
 
 
@@ -81,7 +82,12 @@ def main(args):
         pass
     # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
     # CIDR_hosts is empty, then the input (target) is a single IP address 
-    CIDR_hosts = list(ipaddress.ip_network(target).hosts())
+    try:
+        CIDR_hosts = list(ipaddress.ip_network(target).hosts())
+    except ValueError:
+        #ip_network will raise a ValueError if target isnt a IPv4 or IPv6 address. This means user can still input 
+        #host names or URLs etc
+        CIDR_hosts = []
     if(CIDR_hosts != []):
         for addr in CIDR_hosts:
             #Each address in CIDR_hosts is not stored as a string, and since we need to use strings, we convert
@@ -92,12 +98,10 @@ def main(args):
                 #Extra code that can make the program wait for the last port scan to finish
                 #before beginning the next port scan on the new host. Unsure if it makes any
                 #difference, so its currently commmented out. More research required
-                '''
                 try:
                     scan_thread.join()
                 except:
                     pass
-                '''
                 #Create a new thread to run the port scan in the background
                 scan_thread = threading.Thread(target=port_scan, args=(addr, start_port, end_port,))
                 scan_thread.start()
