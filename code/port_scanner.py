@@ -4,7 +4,7 @@ import sys
 import ipaddress
 import threading
 import time
-from icmplib import ping
+from scapy.all import IP, ICMP, sr
 
 def port_scan(target, start_port, end_port):
     ports_found = 0
@@ -63,6 +63,15 @@ def telnet_banner(target, port):
     response = telnet_socket.recv(1024)
     print(response)
 
+def scapy_ping(target):
+    #scapy does not play nice with the loopback interface, so you cant
+    #ping localhost/127.0.0.1 with scapy packets
+    if(target == "127.0.0.1" or target == "localhost"):
+        return True
+    
+    icmp_packet = IP(dst=target)/ICMP()
+    succ, fail  = sr(icmp_packet, verbose=False, timeout=5)
+    return (len(succ) == 1 and len(fail) == 0)
 
 def main(args): 
     start = time.time()
@@ -93,7 +102,7 @@ def main(args):
             #Each address in CIDR_hosts is not stored as a string, and since we need to use strings, we convert
             addr = str(addr)
             # Check if host is online by pinging it and run a port scan if so
-            if(ping(addr).is_alive):
+            if(scapy_ping(addr)):
                 print(addr + " is online")
                 #Extra code that can make the program wait for the last port scan to finish
                 #before beginning the next port scan on the new host. Unsure if it makes any
@@ -106,7 +115,7 @@ def main(args):
                 scan_thread = threading.Thread(target=port_scan, args=(addr, start_port, end_port,))
                 scan_thread.start()
     else:
-        if(ping(target).is_alive):
+        if(scapy_ping(target)):
                 print(target + " is online")
                 port_scan(target, start_port, end_port)
     end = time.time()
