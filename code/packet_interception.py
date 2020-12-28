@@ -1,6 +1,30 @@
-from scapy.all import sniff, wrpcap
+from scapy.all import sniff, wrpcap, conf
+import subprocess
+import sys
 
-def savepcap(packet):
-    wrpcap('output.pcap', packet, append=True)
+# make sure iface is up, and apply promiscuous permissions to it
+def add_promiscuous(iface):
+    subprocess.run(["ifconfig", iface, "up"])
+    subprocess.run(["ifconfig", iface, "promisc"])
 
-sniff(filter='icmp', prn=lambda packet: savepcap(packet), store=0)
+#gets given a single pack, appends it to a pcap file
+def savepcap(packet, output_path):
+    wrpcap(output_path, packet, append=True)
+
+def main(args):
+    try:
+        iface = args[2]
+    except IndexError:
+        # If the user hasnt set a interface to listen on, just use the interface
+        # scapy is using by default. 
+        iface = conf.iface
+    try: 
+        output = args[1]
+    except:
+        print("Need a file to output packets to")
+        exit(0)
+    
+
+    add_promiscuous(iface)
+    sniff(filter='', prn=lambda p: savepcap(p, output), store=0)
+main(sys.argv)

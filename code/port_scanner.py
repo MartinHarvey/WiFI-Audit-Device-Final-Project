@@ -39,20 +39,21 @@ def port_scan(target, start_port, end_port):
 def http_banner(target, port):
     host = target + ":" + str(port)
     req_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    req_socket.settimeout(20)
     req_socket.connect((target, port))
     req_socket.send(bytes("GET / HTTP/1.1\r\nHost: "+ host +" \r\n\r\n", "utf-8"))
     resp = req_socket.recv(4096)
     resp = resp.decode().split('\r\n')
     req_socket.close()
     for line in resp:
-        print(line)
+        print("|    " + line)
 
 #Works for FTP and SSH so far. Just connects and waits for 4096 bytes of a response
 def generic_banner(target, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((target, port))
     response = sock.recv(4096).decode()
-    print(response)
+    print("|    " + response)
 
 #On test VM response is garbled but seems to be valid UTF-16
 #Otherwise similar to generic_banner(). Other telnet services online return
@@ -61,7 +62,7 @@ def telnet_banner(target, port):
     telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     telnet_socket.connect((target, port))
     response = telnet_socket.recv(1024)
-    print(response)
+    print("|    " + response)
 
 def scapy_ping(target):
     #scapy does not play nice with the loopback interface, so you cant
