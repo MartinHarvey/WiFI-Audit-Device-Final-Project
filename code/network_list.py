@@ -6,6 +6,6 @@ def main(args):
         output = open(args[1], 'w')
     except IndexError:
         output = None
-    subprocess.run(["nmcli","-f", "SSID,SIGNAL,SECURITY" ,"dev", "wifi"], stdout=output)
+    subprocess.run(["nmcli","-f", "BSSID,SSID,SIGNAL,SECURITY" ,"dev", "wifi"], stdout=output)
 
 main(sys.argv)

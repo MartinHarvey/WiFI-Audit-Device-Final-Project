@@ -2,12 +2,12 @@ from scapy.all import sniff, wrpcap, conf
 import subprocess
 import sys
 
-# make sure iface is up, and apply promiscuous permissions to it
+# make sure interface is up, and apply promiscuous permissions to it
 def add_promiscuous(iface):
     subprocess.run(["ifconfig", iface, "up"])
     subprocess.run(["ifconfig", iface, "promisc"])
 
-#gets given a single pack, appends it to a pcap file
+#gets given a single packet, appends it to a pcap file at the output path
 def savepcap(packet, output_path):
     wrpcap(output_path, packet, append=True)
 
