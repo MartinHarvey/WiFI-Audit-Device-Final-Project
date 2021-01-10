@@ -14,6 +14,8 @@ def port_scan(target, start_port, end_port):
         scan_socket.settimeout(5)
         if(scan_socket.connect_ex((target, port)) == 0):
             ports_found += 1
+            
+            #CHecking if port tends to host certain protocols
             try:
                 port_type = socket.getservbyport(port, 'tcp')
                 print("[!]Open Port - " + str(port) + "/TCP. Commonly used for " + port_type)

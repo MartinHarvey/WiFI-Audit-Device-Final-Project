@@ -18,6 +18,7 @@ def main(args):
         # If the user hasnt set a interface to listen on, just use the interface
         # scapy is using by default. 
         iface = conf.iface
+    
     try: 
         output = args[1]
     except:
