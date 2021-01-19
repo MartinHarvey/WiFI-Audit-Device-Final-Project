@@ -64,7 +64,7 @@ def telnet_banner(target, port):
     telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     telnet_socket.connect((target, port))
     response = telnet_socket.recv(1024)
-    print("|    " + response)
+    print("|    " + str(response))
 
 def scapy_ping(target):
     #scapy does not play nice with the loopback interface, so you cant
@@ -79,7 +79,7 @@ def scapy_ping(target):
 def main(args): 
     start = time.time()
     try:
-        target = sys.argv[1]
+        target = args[1]
         start_port = int(args[2])
         end_port   = int(args[3])
     except IndexError:
@@ -87,7 +87,7 @@ def main(args):
         exit()
     #Get the file to redirect the output to if the user has supplied a path
     try:
-        output_file = sys.argv[4]
+        output_file = args[4]
         sys.stdout = open(output_file, 'w')
     except IndexError:
         #stdout will already be normal stdout, so no need to do anything
@@ -123,4 +123,6 @@ def main(args):
                 port_scan(target, start_port, end_port)
     end = time.time()
     print("Time Taken " + str(end - start))
-main(sys.argv)
+
+if __name__ == "__main__":
+    main(sys.argv)

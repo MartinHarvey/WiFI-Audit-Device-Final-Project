@@ -1,3 +1,8 @@
 .vscode/*
 *.pcap
 *.txt
+*.pyc
+code/__pycache__/*
+.pytest_cache/*
+.coverage
+htmlcov/*
