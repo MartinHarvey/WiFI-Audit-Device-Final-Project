@@ -1,7 +1,7 @@
 import port_scanner
 import os
 import sys
-
+import pytest
 # Tests require active internet connection. Uses online resources like en.wikipedia.org or the localhost
 def test_localhost():
     #setup
@@ -11,7 +11,6 @@ def test_localhost():
     output = open("temp.txt", 'r').read()
     #assertions for tests
     assert "localhost is online" in output
-    assert "No of ports found" in output
     #teardown
     os.remove("temp.txt")
 
@@ -29,8 +28,18 @@ def test_http():
 
 def test_ftp():
     sys.stdout = open('temp.txt', 'w')
-    port_scanner.generic_banner('speedtest.tele2.net', 21)
+    port_scanner.generic_banner('ftp.cs.brown.edu', 21)
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
-    assert "220 (vsFTPd" in output
+    #Check if FTP successful connection code is in output
+    assert "220" in output
+    os.remove('temp.txt')
+
+def test_bad_input():
+    sys.stdout = open('temp.txt', 'w')
+    with pytest.raises(SystemExit) as e:
+        port_scanner.main(["", "localhost", "asdasd", "1000"])
+    sys.stdout = sys.__stdout__
+    output = open('temp.txt', 'r').read()
+    assert ("Require an ip address, a start port, and a end port")
     os.remove('temp.txt')

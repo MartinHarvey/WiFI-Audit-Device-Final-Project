@@ -13,19 +13,28 @@ def savepcap(packet, output_path):
 
 def main(args):
     try:
-        iface = args[2]
+        iface = args[3]
     except IndexError:
         # If the user hasnt set a interface to listen on, just use the interface
         # scapy is using by default. 
         iface = conf.iface
+    try: 
+        count_num = int(args[2])
+    except IndexError:
+        count_num = 0
     
     try: 
         output = args[1]
     except:
         print("Need a file to output packets to")
         exit(0)
-    
 
     add_promiscuous(iface)
-    sniff(filter='', prn=lambda p: savepcap(p, output), store=0)
-main(sys.argv)
+    if(count_num > 0):
+        sniff(filter='', prn=lambda p: savepcap(p, output), store=0, count=count_num)
+    else:
+        sniff(filter='', prn=lambda p: savepcap(p, output), store=0)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
