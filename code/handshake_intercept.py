@@ -3,7 +3,8 @@ import sys
 import subprocess
 
 def parse_packets(packet, output):
-    pass
+    if packet.haslayer(Dot11Auth):
+        wrpcap(output, packet, append=True)
 
 def main(args):
     pass

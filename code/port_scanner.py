@@ -11,7 +11,7 @@ def port_scan(target, start_port, end_port):
     #iterate across every port between the start port and end port
     for port in range(start_port, (end_port+1)):
         scan_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        scan_socket.settimeout(5)
+        scan_socket.settimeout(2)
         if(scan_socket.connect_ex((target, port)) == 0):
             ports_found += 1
             
