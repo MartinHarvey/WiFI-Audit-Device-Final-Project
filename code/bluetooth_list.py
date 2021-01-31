@@ -16,5 +16,7 @@ def main(args):
     for addr, name in devices:
     	print(addr + " " + name)
 	
-main(sys.argv)
+    
+if __name__ == "__main__":
+    main(sys.argv)
 

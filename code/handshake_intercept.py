@@ -4,6 +4,7 @@ import subprocess
 
 def parse_packets(packet, output):
     if packet.haslayer(Dot11):
+        if packet.haslayer(Dot11).subtype == '0x0B'
          print("Frame detected")
          wrpcap(output, packet, append=True)
 

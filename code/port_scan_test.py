@@ -41,5 +41,5 @@ def test_bad_input():
         port_scanner.main(["", "localhost", "asdasd", "1000"])
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
-    assert ("Require an ip address, a start port, and a end port")
+    assert "Require an ip address, a start port, and a end port" in output
     os.remove('temp.txt')

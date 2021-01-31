@@ -8,4 +8,5 @@ def main(args):
         output = None
     subprocess.run(["nmcli","-f", "BSSID,SSID,SIGNAL,SECURITY" ,"dev", "wifi"], stdout=output)
 
-main(sys.argv)
+if __name__ == "__main__":
+    main(sys.argv)
