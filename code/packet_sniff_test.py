@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import mimetypes
+from scapy.all import conf
 
 def test_file():
     packet_interception.main(["", "temp.pcap", "5"])
@@ -11,7 +12,12 @@ def test_file():
     os.remove('temp.pcap')
 
 def test_promisc():
-    packet_interception.add_promiscuous("eth0")
-    proc = subprocess.Popen(["ifconfig", "eth0"], stdout=subprocess.PIPE)
+    test_iface = conf.iface
+    packet_interception.add_promiscuous(test_iface)
+    proc = subprocess.Popen(["ifconfig", test_iface], stdout=subprocess.PIPE)
     output = proc.stdout.read()
     assert b"PROMISC" in output
+    packet_interception.rem_promiscuous(test_iface)
+    proc = subprocess.Popen(["ifconfig", test_iface], stdout=subprocess.PIPE)
+    output = proc.stdout.read()
+    assert b"PROMISC" not in output
