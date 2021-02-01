@@ -4,7 +4,7 @@ import subprocess
 
 def parse_packets(packet, output):
     if packet.haslayer(Dot11):
-        print("Frame detected")
+        print("Frame detected. Payload guess:", packet.guess_payload_class())
         wrpcap(output, packet, append=True)
 
 def create_iface():
