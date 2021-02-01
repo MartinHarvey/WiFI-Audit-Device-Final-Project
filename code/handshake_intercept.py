@@ -4,7 +4,14 @@ import subprocess
 
 def parse_packets(packet, output):
     if packet.haslayer(Dot11):
-        print("Frame detected. Payload guess:", packet.guess_payload_class())
+        if packet.haslayer(Dot11Auth):
+            print("Auth Frame Detected")
+        elif packet.haslayer(Dot11Beacon): 
+            print("Beacon frame Detected")
+        elif packet.haslayer(Dot11Probe):
+            print("Probe frame detected")
+        else:
+            print("Other frame detected")
         wrpcap(output, packet, append=True)
 
 def create_iface():
@@ -21,8 +28,12 @@ def main(args):
     except IndexError:
         print("Need a output file and a wifi channel to listen on")
         exit(0)
+    
+    proc = subprocess.Popen(["iw", "dev"], stdout=subprocess.PIPE)
+    iw_results = proc.stdout.read()
 
-    create_iface()
+    if("mon0" not in iw_results):
+        create_iface()
     set_channel(channel)
     sniff(filter="", prn=lambda p: parse_packets(p, outpath), store=0, iface='mon0')
 
