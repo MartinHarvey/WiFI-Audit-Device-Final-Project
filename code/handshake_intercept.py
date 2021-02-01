@@ -4,7 +4,6 @@ import subprocess
 
 def parse_packets(packet, output):
     if packet.haslayer(Dot11):
-<<<<<<< HEAD
         print("Frame detected")
         wrpcap(output, packet, append=True)
 
@@ -14,11 +13,6 @@ def create_iface():
 
 def set_channel(channel):
     subprocess.run(["iw", "mon0", "set", "channel", str(channel)])
-=======
-        if packet.haslayer(Dot11).subtype == '0x0B':
-            print("Frame detected")
-            wrpcap(output, packet, append=True)
->>>>>>> 97c9eb501c6164b12ccafb91a23cc72d6abbcfbb
 
 def main(args):
     try:
