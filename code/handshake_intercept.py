@@ -4,14 +4,6 @@ import subprocess
 
 def parse_packets(packet, output):
     if packet.haslayer(Dot11):
-        if packet.haslayer(Dot11Auth):
-            print("Auth Frame Detected")
-        elif packet.haslayer(Dot11Beacon): 
-            print("Beacon frame Detected")
-        elif packet.haslayer(Dot11Probe):
-            print("Probe frame detected")
-        else:
-            print("Other frame detected")
         wrpcap(output, packet, append=True)
 
 def create_iface():
@@ -19,7 +11,7 @@ def create_iface():
     subprocess.run(["ifconfig", "mon0", "up"])
 
 def set_channel(channel):
-    subprocess.run(["iw", "mon0", "set", "channel", str(channel)])
+    subprocess.run(["iwconfig", "mon0", "channel", str(channel)])
 
 def main(args):
     try:
@@ -32,10 +24,11 @@ def main(args):
     proc = subprocess.Popen(["iw", "dev"], stdout=subprocess.PIPE)
     iw_results = proc.stdout.read()
 
-    if("mon0" not in iw_results):
+    if(b"mon0" not in iw_results):
         create_iface()
+    
     set_channel(channel)
-    sniff(filter="", prn=lambda p: parse_packets(p, outpath), store=0, iface='mon0')
+    sniff(filter="tcp", prn=lambda p: parse_packets(p, outpath), store=0, iface='mon0')
 
 if __name__ == "__main__":
     main(sys.argv)
