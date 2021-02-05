@@ -3,15 +3,22 @@ import sys
 import subprocess
 
 def parse_packets(packet, output):
-    if packet.haslayer(Dot11):
+        print("Saving frame")
         wrpcap(output, packet, append=True)
 
+def check_iface():
+    proc = subprocess.Popen(["iw", "dev"], stdout=subprocess.PIPE)
+    iw_results = proc.stdout.read()
+
+    return (b"mon" not in iw_results)
+
 def create_iface():
-    subprocess.run(["iw", "phy0", "interface", "add", "mon0", "type", "monitor"])
+    subprocess.run(["airmon-ng", "check", "kill"])
+    subprocess.run(["airmon-ng", "start", "wlan0"])
     subprocess.run(["ifconfig", "mon0", "up"])
 
 def set_channel(channel):
-    subprocess.run(["iwconfig", "mon0", "channel", str(channel)])
+    subprocess.run(["iwconfig", "wlan0mon", "channel", str(channel)])
 
 def main(args):
     try:
@@ -21,14 +28,12 @@ def main(args):
         print("Need a output file and a wifi channel to listen on")
         exit(0)
     
-    proc = subprocess.Popen(["iw", "dev"], stdout=subprocess.PIPE)
-    iw_results = proc.stdout.read()
-
-    if(b"mon0" not in iw_results):
+    if(check_iface()):
         create_iface()
     
     set_channel(channel)
-    sniff(filter="tcp", prn=lambda p: parse_packets(p, outpath), store=0, iface='mon0')
+    print("Now beginning to sniff")
+    sniff(filter="", prn=lambda p: parse_packets(p, outpath), store=0, iface='wlan0mon')
 
 if __name__ == "__main__":
     main(sys.argv)
