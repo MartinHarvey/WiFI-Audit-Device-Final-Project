@@ -3,6 +3,7 @@ import sys
 import subprocess
 
 def parse_packets(packet, output):
+    if packet.haslayer(Dot11Auth) or packet.haslayer(EAPOL):
         print("Saving frame")
         wrpcap(output, packet, append=True)
 
@@ -15,7 +16,7 @@ def check_iface():
 def create_iface():
     subprocess.run(["airmon-ng", "check", "kill"])
     subprocess.run(["airmon-ng", "start", "wlan0"])
-    subprocess.run(["ifconfig", "mon0", "up"])
+    subprocess.run(["ifconfig", "wlan0mon", "up"])
 
 def set_channel(channel):
     subprocess.run(["iwconfig", "wlan0mon", "channel", str(channel)])
