@@ -1,4 +1,5 @@
 from scapy.all import *
+from scapy.contrib import *
 import sys
 import subprocess
 
@@ -47,11 +48,12 @@ def main(args):
     
     set_channel(channel)
     print("Now beginning to sniff")
-    packets = sniff(filter="", iface='wlan0mon')
-    print("Parsing packets now")
+    packets = sniff(iface='wlan0mon', filter="ether proto 0x888e")
+    print(packets)
     for packet in packets: 
         parse_packets(packet, outpath)
+
 if __name__ == "__main__":
-    #conf.layers.filter(![ICMP, ARP, HTTP, SSL, UDP, TCP])
+    #conf.layers.filter([Dot11, Dot11Auth, EAPOL, EAP])
     main(sys.argv)
     #conf.layers.unfilter()
