@@ -48,7 +48,7 @@ def main(args):
     
     set_channel(channel)
     print("Now beginning to sniff")
-    packets = sniff(iface='wlan0mon', filter="ether proto 0x888e")
+    packets = sniff(iface='wlan0mon', filter="ether proto 0x888e or wlan type mgt subtype auth")
     print(packets)
     for packet in packets: 
         parse_packets(packet, outpath)
