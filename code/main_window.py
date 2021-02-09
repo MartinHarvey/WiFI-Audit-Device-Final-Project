@@ -1,7 +1,19 @@
 import tkinter as tk
 
+class app(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self._frame = None
+        self.change_frame(main_page)
 
-class main_window(tk.Frame):
+    def change_frame(self, frame_type):
+        frame = frame_type(self)
+        if self._frame != None:
+            self._frame.destroy()
+        self._frame = frame
+        #self.frame.pack()
+
+class main_page(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -24,6 +36,7 @@ class main_window(tk.Frame):
 
         self.network_list_button = tk.Button(self)
         self.network_list_button["text"] = "Local WiFi Networks"
+        self.network_list_button["command"] = lambda: self.master.change_frame(network_page)
         self.network_list_button.grid(row=1, column=1, sticky="ew")
 
         self.dictionary_attack_button = tk.Button(self)
@@ -34,6 +47,18 @@ class main_window(tk.Frame):
         self.handshake_intercept_button["text"] = "WPA Handshake Interception"
         self.handshake_intercept_button.grid(row=2, column=1, sticky="ew")
 
-root = tk.Tk()
-main = main_window(root)
-main.mainloop()
+class network_page(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Network List")
+        self.create_window()
+        self.pack()
+
+    def create_window(self):
+        self.main_label = tk.Label()
+        self.main_label["text"] = "Network List"
+        self.main_label.pack()
+if __name__ == "__main__":
+    app = app()
+    app.mainloop() 
