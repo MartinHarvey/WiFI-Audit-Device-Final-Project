@@ -1,4 +1,8 @@
 import tkinter as tk
+import network_list
+import bluetooth_list
+import sys
+from io import StringIO
 
 class app(tk.Tk):
     def __init__(self):
@@ -32,6 +36,7 @@ class main_page(tk.Frame):
 
         self.bluetooth_list_button = tk.Button(self)
         self.bluetooth_list_button["text"] = "Local Bluetooth Devices"
+        self.bluetooth_list_button["command"] = lambda: self.master.change_frame(bluetooth_page)
         self.bluetooth_list_button.grid(row=1, column=0, sticky="ew")
 
         self.network_list_button = tk.Button(self)
@@ -64,6 +69,39 @@ class network_page(tk.Frame):
         self.back_button["text"] = "Go Back"
         self.back_button["command"] = lambda: self.master.change_frame(main_page)
         self.back_button.pack()
+
+        self.output = tk.Label(self)
+        sys.stdout = StringIO()
+        network_list.main([])
+        self.output["text"] = sys.stdout.getvalue()
+        sys.stdout = sys.__stdout__
+        self.output.pack()
+        
+class bluetooth_page(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Bluetooth Devices")
+        self.create_window()
+        self.pack()
+
+    def create_window(self):
+        self.main_label = tk.Label(self)
+        self.main_label["text"] = "Bluetooth Devices"
+        self.main_label.pack()
+
+        self.back_button = tk.Button(self)
+        self.back_button["text"] = "Go Back"
+        self.back_button["command"] = lambda: self.master.change_frame(main_page)
+        self.back_button.pack()
+
+        self.output = tk.Label(self)
+        sys.stdout = StringIO()
+        bluetooth_list.main([])
+        self.output["text"] = sys.stdout.getvalue()
+        sys.stdout = sys.__stdout__
+        self.output.pack()
+        
 
 if __name__ == "__main__":
     app = app()
