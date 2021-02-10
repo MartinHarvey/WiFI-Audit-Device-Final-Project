@@ -11,15 +11,15 @@ class app(tk.Tk):
         if self._frame != None:
             self._frame.destroy()
         self._frame = frame
-        #self.frame.pack()
+        self._frame.pack()
 
 class main_page(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master):
         super().__init__(master)
         self.master = master
         self.master.title("WiFi Audit Device")
         self.create_window()
-        self.pack()
+    
 
     def create_window(self):
         self.port_scanner_button = tk.Button(self)
@@ -48,7 +48,7 @@ class main_page(tk.Frame):
         self.handshake_intercept_button.grid(row=2, column=1, sticky="ew")
 
 class network_page(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master):
         super().__init__(master)
         self.master = master
         self.master.title("Network List")
@@ -56,9 +56,15 @@ class network_page(tk.Frame):
         self.pack()
 
     def create_window(self):
-        self.main_label = tk.Label()
+        self.main_label = tk.Label(self)
         self.main_label["text"] = "Network List"
         self.main_label.pack()
+
+        self.back_button = tk.Button(self)
+        self.back_button["text"] = "Go Back"
+        self.back_button["command"] = lambda: self.master.change_frame(main_page)
+        self.back_button.pack()
+
 if __name__ == "__main__":
     app = app()
     app.mainloop() 
