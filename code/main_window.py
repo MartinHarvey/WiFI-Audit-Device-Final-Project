@@ -26,56 +26,67 @@ class main_page(tk.Frame):
     
 
     def create_window(self):
-        self.port_scanner_button = tk.Button(self)
-        self.port_scanner_button["text"] = "Port Scanner"
-        self.port_scanner_button.grid(row=0, column=0, sticky="ew")
+        self.port_scanner_button = tk.Button(
+            self,
+            text="Port Scanner",
+            command= lambda: self.master.change_frame(port_scan_opt_page)
+        ).grid(row=0, column=0, sticky="ew")
 
-        self.packet_sniff_button = tk.Button(self)
-        self.packet_sniff_button["text"] = "Packet Interception"
-        self.packet_sniff_button.grid(row=0, column=1, sticky="ew")
+        self.packet_sniff_button = tk.Button(
+            self,
+            text = "Packet Interception",
+        ).grid(row=0, column=1, sticky="ew")
 
-        self.bluetooth_list_button = tk.Button(self)
-        self.bluetooth_list_button["text"] = "Local Bluetooth Devices"
-        self.bluetooth_list_button["command"] = lambda: self.master.change_frame(bluetooth_page)
-        self.bluetooth_list_button.grid(row=1, column=0, sticky="ew")
+        self.bluetooth_list_button = tk.Button(
+            self,
+            text="Local Bluetooth Devices",
+            command = lambda: self.master.change_frame(bluetooth_page)
+        ).grid(row=1, column=0, sticky="ew")
 
-        self.network_list_button = tk.Button(self)
-        self.network_list_button["text"] = "Local WiFi Networks"
-        self.network_list_button["command"] = lambda: self.master.change_frame(network_page)
-        self.network_list_button.grid(row=1, column=1, sticky="ew")
+        self.network_list_button = tk.Button(
+            self,
+            text = "Local WiFi Networks",
+            command = lambda: self.master.change_frame(network_page)
+        ).grid(row=1, column=1, sticky="ew")
 
-        self.dictionary_attack_button = tk.Button(self)
-        self.dictionary_attack_button["text"] = "Dictionary Attack"
-        self.dictionary_attack_button.grid(row=2, column=0, sticky="ew")
+        self.dictionary_attack_button = tk.Button(
+            self,
+            text = "Dictionary Attack",
+        ).grid(row=2, column=0, sticky="ew")
 
-        self.handshake_intercept_button = tk.Button(self)
-        self.handshake_intercept_button["text"] = "WPA Handshake Interception"
-        self.handshake_intercept_button.grid(row=2, column=1, sticky="ew")
+        self.handshake_intercept_button = tk.Button(
+            self,
+            text = "WPA Handshake Interception"
+        ).grid(row=2, column=1, sticky="ew")
 
 class network_page(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
+        
         self.master = master
         self.master.title("Network List")
         self.create_window()
         self.pack()
 
     def create_window(self):
-        self.main_label = tk.Label(self)
-        self.main_label["text"] = "Network List"
-        self.main_label.pack()
+        self.main_label = tk.Label(
+            self,
+            text = "Network List"
+        ).pack()
 
-        self.back_button = tk.Button(self)
-        self.back_button["text"] = "Go Back"
-        self.back_button["command"] = lambda: self.master.change_frame(main_page)
-        self.back_button.pack()
+        self.back_button = tk.Button(
+            self,
+            text = "Go Back",
+            command = lambda: self.master.change_frame(main_page)
+        ).pack()
 
-        self.output = tk.Label(self)
         sys.stdout = StringIO()
         network_list.main([])
-        self.output["text"] = sys.stdout.getvalue()
+        self.output = tk.Label(
+            self,
+            text = sys.stdout.getvalue()
+        ).pack()
         sys.stdout = sys.__stdout__
-        self.output.pack()
         
 class bluetooth_page(tk.Frame):
     def __init__(self, master):
@@ -90,19 +101,57 @@ class bluetooth_page(tk.Frame):
         self.main_label["text"] = "Bluetooth Devices"
         self.main_label.pack()
 
-        self.back_button = tk.Button(self)
-        self.back_button["text"] = "Go Back"
-        self.back_button["command"] = lambda: self.master.change_frame(main_page)
-        self.back_button.pack()
+        self.back_button = tk.Button(
+            self,
+            text = "Go Back",
+            command = lambda: self.master.change_frame(main_page)
+        ).pack()
 
-        self.output = tk.Label(self)
+        
         sys.stdout = StringIO()
         bluetooth_list.main([])
-        self.output["text"] = sys.stdout.getvalue()
+        self.output = tk.Label(
+            self,
+            text = sys.stdout.getvalue()
+        ).pack()
         sys.stdout = sys.__stdout__
-        self.output.pack()
-        
+class port_scan_opt_page(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Port Scanner Options")
+        self.create_window()
+        self.pack()
+    
+    def create_window(self):
+        self.main_label = tk.Label(
+            self,
+            text = "Port Scanner Options"
+        ).pack()
 
+        self.address_entry = tk.Entry(
+            self
+        ).pack()
+        self.sport_entry = tk.Entry(
+            self
+        ).pack()
+        self.eport_entry = tk.Entry(
+            self
+        ).pack()
+
+        self.run_button = tk.Button(
+            self,
+            text = "Run Port Scanner",
+        ).pack()
+
+        self.back_button = tk.Button(
+            self,
+            text = "Go Back",
+            command = lambda: self.master.change_frame(main_page)
+        ).pack()
+
+    
 if __name__ == "__main__":
     app = app()
+    app.geometry("480x320")
     app.mainloop() 
