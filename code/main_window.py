@@ -188,24 +188,20 @@ class port_scan_results(tk.Frame):
         self.pack()
 
     def create_window(self):
-        self.main_label = tk.Label(
+        self.scrollbar = tk.Scrollbar(
             self,
-            text = "Scanning"
-        ).pack()
+        )
+        self.scrollbar.grid(row=1,column=1, sticky='nsew')
 
         self.output_box = tk.Text(
             self,
             height = 15,
-            width  = 57
+            width  = 57,
+            yscrollcommand = self.scrollbar.set
         )
-        self.output_box.pack(side = tk.LEFT)
-        
-        self.scrollbar = tk.Scrollbar(
-            self,
-            command = self.output_box.yview
-        )
-        
-        self.scrollbar.pack(side = tk.RIGHT, fill=tk.Y)
+        self.output_box.grid(row=1, column=0)
+        self.scrollbar['command'] = self.output_box.yview
+
         sys.stdout = StringIO()
         port_scanner.main(["", self.addr, self.sport, self.eport])
         self.output_box.insert(tk.END, sys.stdout.getvalue())
@@ -215,7 +211,7 @@ class port_scan_results(tk.Frame):
             self,
             text = "Go Back",
             command = lambda: self.master.change_frame(port_scan_opt_page)
-        ).pack(side=tk.BOTTOM)
+        ).grid(row=2, column=0)
 
 
 if __name__ == "__main__":
