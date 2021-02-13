@@ -158,61 +158,92 @@ class port_scan_opt_page(tk.Frame):
         )
         self.eport_entry.grid(row=3, column=1)
 
+        self.output = None
+        self.open_file_label = tk.Label(
+            self,
+            text="Output to file (optional)"
+        ).grid(row=4, column=0)
+
+        self.open_file_button = tk.Button(
+            self,
+            text = "Choose file",
+            command = lambda: self.out_file()
+        ).grid(row=4, column=1)
+
         self.run_button = tk.Button(
             self,
             text = "Run Port Scanner",
             command = lambda: self.master.change_frame(
-                port_scan_results,
-                self.addr_entry.get(),
-                self.sport_entry.get(),
-                self.eport_entry.get()
-            )
-        ).grid(row=4, column=1)
+                    port_scan_results,
+                    self.addr_entry.get(),
+                    self.sport_entry.get(),
+                    self.eport_entry.get(),
+                    self.output
+                    )   
+        ).grid(row=5, column=1)
 
         self.back_button = tk.Button(
             self,
             text = "Go Back",
             command = lambda: self.master.change_frame(main_page)
-        ).grid(row=4, column = 0)
-
+        ).grid(row=5, column = 0)
+    
+    def out_file(self):
+        self.output = tk.filedialog.asksaveasfilename(
+                    title = "Where do you want to save the scan results?", 
+                    filetypes = (("txt files","*.txt"), ("all files","*.*"))
+                    )
 
 class port_scan_results(tk.Frame):
-    def __init__(self, master, addr, sport, eport):
+    def __init__(self, master, addr, sport, eport, output=None):
         super().__init__(master)
         self.master = master
         self.addr = addr
         self.sport = sport
         self.eport = eport
+        self.output = output
         self.master.title("Port Scanner")
         self.create_window()
         self.pack()
 
     def create_window(self):
-        self.scrollbar = tk.Scrollbar(
-            self,
-        )
-        self.scrollbar.grid(row=1,column=1, sticky='nsew')
+        if(self.output is None):
+            self.scrollbar = tk.Scrollbar(
+                self,
+            )
+            self.scrollbar.grid(row=1,column=1, sticky='nsew')
 
-        self.output_box = tk.Text(
-            self,
-            height = 15,
-            width  = 57,
-            yscrollcommand = self.scrollbar.set
-        )
-        self.output_box.grid(row=1, column=0)
-        self.scrollbar['command'] = self.output_box.yview
+            self.output_box = tk.Text(
+                self,
+                height = 15,
+                width  = 57,
+                yscrollcommand = self.scrollbar.set
+            )
+            self.output_box.grid(row=1, column=0)
+            self.scrollbar['command'] = self.output_box.yview
 
-        sys.stdout = StringIO()
-        port_scanner.main(["", self.addr, self.sport, self.eport])
-        self.output_box.insert(tk.END, sys.stdout.getvalue())
-        sys.stdout = sys.__stdout__
-        
-        self.back_button = tk.Button(
-            self,
-            text = "Go Back",
-            command = lambda: self.master.change_frame(port_scan_opt_page)
-        ).grid(row=2, column=0)
+            sys.stdout = StringIO()
+            port_scanner.main(["", self.addr, self.sport, self.eport])
+            self.output_box.insert(tk.END, sys.stdout.getvalue())
+            sys.stdout = sys.__stdout__
+            
+            self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(port_scan_opt_page)
+            ).grid(row=2, column=0)
+        else:
+            port_scanner.main(["", self.addr, self.sport, self.eport, self.output])
+            self.out_label = tk.Label(
+                self,
+                text = "Port scan results outputted" + self.output
+            ).pack()
 
+            self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(port_scan_opt_page)
+            ).pack()
 
 if __name__ == "__main__":
     app = app()

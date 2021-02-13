@@ -78,13 +78,6 @@ def scapy_ping(target):
 
 def main(args): 
     start = time.time()
-    try:
-        target = args[1]
-        start_port = int(args[2])
-        end_port   = int(args[3])
-    except (IndexError, ValueError):
-        print("Require an ip address, a start port, and a end port")
-        return 0
     #Get the file to redirect the output to if the user has supplied a path
     try:
         output_file = args[4]
@@ -92,6 +85,14 @@ def main(args):
     except IndexError:
         #stdout will already be normal stdout, so no need to do anything
         pass
+   
+    try:
+        target = args[1]
+        start_port = int(args[2])
+        end_port   = int(args[3])
+    except (IndexError, ValueError):
+        print("Require an ip address, a start port, and a end port")
+        return 0
     # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
     # CIDR_hosts is empty, then the input (target) is a single IP address 
     try:
