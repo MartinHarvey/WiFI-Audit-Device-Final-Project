@@ -84,7 +84,7 @@ def main(args):
         end_port   = int(args[3])
     except (IndexError, ValueError):
         print("Require an ip address, a start port, and a end port")
-        exit()
+        return 0
     #Get the file to redirect the output to if the user has supplied a path
     try:
         output_file = args[4]
