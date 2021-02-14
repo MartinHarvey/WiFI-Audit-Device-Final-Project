@@ -3,6 +3,7 @@ import network_list
 import bluetooth_list
 import port_scanner
 import packet_interception
+import network_dictionary_attack
 import sys
 from io import StringIO
 from multiprocessing import Process
@@ -58,6 +59,7 @@ class main_page(tk.Frame):
         self.dictionary_attack_button = tk.Button(
             self,
             text = "Dictionary Attack",
+            command = lambda: self.master.change_frame(dictionary_attack_opt_page)
         ).grid(row=2, column=0, sticky="ew")
 
         self.handshake_intercept_button = tk.Button(
@@ -101,7 +103,13 @@ class network_list_opts_page(tk.Frame):
                     network_page,
                     self.output
                     )   
-        ).grid(row=2, column=0)
+        ).grid(row=2, column=1)
+
+        self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(main_page)
+            ).grid(row=2, column=0)
 
     def out_file(self):
         #Creates a file dialog, returns file path of selected file, used to set self.output
@@ -191,7 +199,13 @@ class bluetooth_opt_page(tk.Frame):
                     bluetooth_page,
                     self.output
                     )   
-        ).grid(row=2, column=0)
+        ).grid(row=2, column=1)
+
+        self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(main_page)
+            ).grid(row=2, column=0)
 
     def out_file(self):
         #Creates a file dialog, returns file path of selected file, used to set self.output
@@ -426,7 +440,13 @@ class packet_sniff_opt_page(tk.Frame):
                     self.output,
                     self.count_entry.get()
                     )   
-        ).grid(row=3, column=0)
+        ).grid(row=3, column=1)
+
+        self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(main_page)
+            ).grid(row=3, column=0)
 
     def out_file(self):
         self.output = tk.filedialog.asksaveasfilename(
@@ -469,7 +489,96 @@ class packet_sniff_page(tk.Frame):
                 text = "Go Back",
                 command = lambda: self.master.change_frame(packet_sniff_opt_page)
             ).pack(side=tk.RIGHT)
-            
+
+class dictionary_attack_opt_page(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Dictionary Attack Options")
+        self.create_window()
+        self.pack()
+
+    def create_window(self):
+        self.options_label = tk.Label(
+            self,
+            text = "Dictionary Attack Options"
+        ).grid(row = 0, column=0)
+
+        self.wordlist_label = tk.Label(
+            self,
+            text = "Select Wordlist"
+        ).grid(row=1, column=0)
+
+        self.wordlist = None
+        self.select_worlist_button = tk.Button(
+            self,
+            text = "Select Wordlist",
+            command = lambda: self.get_wordlist()
+        ).grid(row=1, column=1)
+
+        self.target_label = tk.Label(
+            self,
+            text = "Target Network Name: "
+        ).grid(row=2, column=0)
+        self.target_entry = tk.Entry(
+            self
+        )
+        self.target_entry.grid(row=2, column=1)
+
+        self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(main_page)
+            ).grid(row=3, column=0)
+
+        self.run_button = tk.Button(
+            self,
+            text = "Run Dictionary Attack",
+            command = lambda: self.master.change_frame(
+                dictionary_attack_page, 
+                self.wordlist,
+                self.target_entry.get()
+                )
+        ).grid(row=3, column=1)
+    
+    def get_wordlist(self):
+        self.wordlist = tk.filedialog.askopenfilename(
+                            title = "Where is the wordlist?", 
+                            filetypes = (("txt file","*.txt"), ("all files","*.*"))
+                        )
+
+class dictionary_attack_page(tk.Frame):
+    def __init__(self, master, wordlist, target):
+        super().__init__(master)
+        self.master = master
+        self.target = target
+        self.wordlist = wordlist
+        self.master.title("Dictionary Attack")
+        self.create_window()
+        self.pack()
+
+    def create_window(self):
+        self.results_label = tk.Label(
+            self,
+            text = "Dictionary Attack Results"
+        ).grid(row=0, column=0)
+
+        self.output_box = tk.Text(
+            self,
+            height = 15,
+            width  = 57,
+        ).grid(row=1, column=0)
+
+        sys.stdout = StringIO()
+        network_dictionary_attack.main(["", self.target, self.wordlist])
+        self.output_box.insert(tk.END, sys.stdout.getvalue())
+        sys.stdout = sys.__stdout__
+
+        self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(dictionary_attack_opt_page)
+            ).grid(row=2, column=0)
 if __name__ == "__main__":
     #Create app object, sets its size and run it
     app = app()
