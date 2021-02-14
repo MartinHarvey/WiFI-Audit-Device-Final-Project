@@ -4,7 +4,8 @@ import sys
 
 def main(args):
 	try:
-		sys.stdout = open(sys.argv[1], 'w')
+		sys.stdout = open(args[1], 'w')
+		print(sys.argv[1])
 	except IndexError:
 		pass
 	try:
