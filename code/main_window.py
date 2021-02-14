@@ -2,8 +2,10 @@ import tkinter as tk
 import network_list
 import bluetooth_list
 import port_scanner
+import packet_interception
 import sys
 from io import StringIO
+from multiprocessing import Process
 
 class app(tk.Tk):
     def __init__(self):
@@ -38,6 +40,7 @@ class main_page(tk.Frame):
         self.packet_sniff_button = tk.Button(
             self,
             text = "Packet Interception",
+            command = lambda: self.master.change_frame(packet_sniff_opt_page)
         ).grid(row=0, column=1, sticky="ew")
 
         self.bluetooth_list_button = tk.Button(
@@ -378,6 +381,95 @@ class port_scan_results(tk.Frame):
                 command = lambda: self.master.change_frame(port_scan_opt_page)
             ).pack()
 
+class packet_sniff_opt_page(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Packet Interception Options")
+        self.create_window()
+        self.pack()
+    
+    def create_window(self):
+        self.main_label = tk.Label(
+            self,
+            text = "Packet Sniffing Options"
+        ).grid(row=0, column=0)
+
+        #Allows user to select output file if they want
+        #Set to None as default
+        self.output = None
+        self.open_file_label = tk.Label(
+            self,
+            text="Output to file"
+        ).grid(row=1, column=0)
+
+        self.open_file_button = tk.Button(
+            self,
+            text = "Choose file",
+            command = lambda: self.out_file()
+        ).grid(row=1, column=1)
+
+        self.packet_count_label = tk.Label(
+            self,
+            text = "How many packets should be \nintercepted? Set to 0 to run infinitely"
+        ).grid(row=2, column=0)
+        self.count_entry = tk.Entry(
+            self
+        )
+        self.count_entry.grid(row=2, column=1)
+
+        self.packet_sniff_button = tk.Button(
+            self,
+            text = "Run Packet Sniff",
+            command = lambda: self.master.change_frame(
+                    packet_sniff_page,
+                    self.output,
+                    self.count_entry.get()
+                    )   
+        ).grid(row=3, column=0)
+
+    def out_file(self):
+        self.output = tk.filedialog.asksaveasfilename(
+                    title = "Where do you want to save the scan results?", 
+                    filetypes = (("pcap file","*.pcap"), ("all files","*.*"))
+                    )
+
+class packet_sniff_page(tk.Frame):
+    def __init__(self, master, output, count):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Packet Sniffing")
+        self.output = output
+        self.count  = count
+        self.create_window()
+        self.pack()
+    
+    def create_window(self):
+            #Create a process to run the packet sniffer on, as user can choose for it 
+            #to run indefinitely
+            self.packet_sniff_process = Process(
+                                    target=packet_interception.main, 
+                                    args=(["", self.output, self.count],)
+                                    ) #Create the process
+            self.packet_sniff_process.start() #start process
+            self.page_label = tk.Label(
+                self,
+                text = "Packet Interception \n Saved to" + self.output
+            ).pack()
+            #Kill button for process
+            self.kill_thread_button = tk.Button(
+                self,
+                text = "Stop Packet Interception",
+                command = lambda: self.packet_sniff_process.terminate()
+            ).pack(side=tk.LEFT)
+
+            #Go back to option page for packet interception
+            self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(packet_sniff_opt_page)
+            ).pack(side=tk.RIGHT)
+            
 if __name__ == "__main__":
     #Create app object, sets its size and run it
     app = app()
