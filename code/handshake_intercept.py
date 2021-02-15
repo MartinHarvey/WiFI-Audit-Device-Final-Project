@@ -3,10 +3,6 @@ from scapy.contrib import *
 import sys
 import subprocess
 
-def parse_packets(packet, output):
-    if packet.haslayer(Dot11Auth) or packet.haslayer(EAPOL):
-        wrpcap(output, packet, append=True)
-
 def check_iface():
     proc = subprocess.Popen(["iw", "dev"], stdout=subprocess.PIPE)
     iw_results = proc.stdout.read()
@@ -35,10 +31,10 @@ def main(args):
     set_channel(channel)
     print("Now beginning to sniff")
     try:
-        packets = sniff(iface='wlan0mon', filter="ether proto 0x888e or wlan type mgt subtype auth", prn= lambda packet: wrpcap(output, packet, append=True))
+        packets = sniff(iface='wlan0mon', filter="ether proto 0x888e or wlan type mgt subtype auth", prn= lambda packet: wrpcap(outpath, packet, append=True))
         print(packets)
     except OSError:
-        print("No device exists")
+        print("No wireless device exists")
         return 0
 
 if __name__ == "__main__":
