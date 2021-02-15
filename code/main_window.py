@@ -4,6 +4,7 @@ import bluetooth_list
 import port_scanner
 import packet_interception
 import network_dictionary_attack
+import handshake_intercept
 import sys
 from io import StringIO
 from multiprocessing import Process
@@ -64,7 +65,8 @@ class main_page(tk.Frame):
 
         self.handshake_intercept_button = tk.Button(
             self,
-            text = "WPA Handshake Interception"
+            text = "WPA Handshake Interception",
+            command = lambda: self.master.change_frame(handshake_intercept_opt_page)
         ).grid(row=2, column=1, sticky="ew")
 
 class network_list_opts_page(tk.Frame):
@@ -468,27 +470,27 @@ class packet_sniff_page(tk.Frame):
             #Create a process to run the packet sniffer on, as user can choose for it 
             #to run indefinitely
             self.packet_sniff_process = Process(
-                                    target=packet_interception.main, 
-                                    args=(["", self.output, self.count],)
-                                    ) #Create the process
+                target=packet_interception.main, 
+                args=(["", self.output, self.count],)
+                ) #Create the process
             self.packet_sniff_process.start() #start process
             self.page_label = tk.Label(
                 self,
                 text = "Packet Interception \n Saved to" + self.output
             ).pack()
             #Kill button for process
-            self.kill_thread_button = tk.Button(
+            self.kill_process_button = tk.Button(
                 self,
                 text = "Stop Packet Interception",
                 command = lambda: self.packet_sniff_process.terminate()
-            ).pack(side=tk.LEFT)
+            ).pack(side=tk.RIGHT)
 
             #Go back to option page for packet interception
             self.back_button = tk.Button(
                 self,
                 text = "Go Back",
                 command = lambda: self.master.change_frame(packet_sniff_opt_page)
-            ).pack(side=tk.RIGHT)
+            ).pack(side=tk.LEFT)
 
 class dictionary_attack_opt_page(tk.Frame):
     def __init__(self, master):
@@ -579,6 +581,95 @@ class dictionary_attack_page(tk.Frame):
                 text = "Go Back",
                 command = lambda: self.master.change_frame(dictionary_attack_opt_page)
             ).grid(row=2, column=0)
+
+class handshake_intercept_opt_page(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Handshake Intercept Options")
+        self.create_window()
+        self.pack()
+
+    def create_window(self):
+        self.main_label = tk.Label(
+            self,
+            text = "Handshake Interception Options"
+        ).grid(row=0, column=0)
+    
+        self.output_label = tk.Label(
+            self,
+            text = "Choose output .pcap file",
+        ).grid(row=1, column=0)
+        self.output_button = tk.Button(
+            self,
+            text = "Choose file",
+            command = self.out_file
+        ).grid(row=1, column=1)
+        self.channel_label = tk.Label(
+            self,
+            text = "Choose WiFi channel to listen on"
+        ).grid(row=2, column=0)
+        self.channel_entry = tk.Entry(
+            self
+        )
+        self.channel_entry.grid(row=2, column=1)
+        
+        self.back_button = tk.Button(
+                self,
+                text = "Go Back",
+                command = lambda: self.master.change_frame(main_page)
+            ).grid(row=3, column=0)
+        self.run_button = tk.Button(
+            self,
+            text = "Capture Handshakes",
+            command = lambda: self.master.change_frame(
+                handshake_intercept_page,
+                self.output,
+                self.channel_entry.get()
+            )
+        ).grid(row=3, column=1)
+        
+    def out_file(self):
+        self.output = tk.filedialog.asksaveasfilename(
+                    title = "Where do you want to save the scan results?", 
+                    filetypes = (("pcap file","*.pcap"), ("all files","*.*"))
+                    )
+
+class handshake_intercept_page(tk.Frame):
+    def __init__(self, master, output, channel):
+        super().__init__(master)
+        self.master = master
+        self.master.title("Handshake Interception")
+        self.output = output
+        self.channel  = channel
+        self.create_window()
+        self.pack()
+    
+    def create_window(self):
+        self.main_label = tk.Label(
+            self,
+            text = "Handshake Interception \n saved to \n" + self.output
+        ).pack()
+        self.interception_process = Process(
+            target=handshake_intercept.main,
+            args=(["", self.output, self.channel],)
+        )
+        self.interception_process.start()
+
+        self.kill_process_button = tk.Button(
+            self,
+            text = "Stop Handshake Interception",
+            command = lambda: self.interception_process.terminate()
+        ).pack(side=tk.RIGHT)
+
+        self.back_button = tk.Button(
+            self,
+            text = "Go Back",
+            command = lambda: self.master.change_frame(handshake_intercept_opt_page)
+        ).pack(side=tk.LEFT)
+
+
+
 if __name__ == "__main__":
     #Create app object, sets its size and run it
     app = app()
