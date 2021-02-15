@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.filedialog
 import network_list
 import bluetooth_list
 import port_scanner
@@ -569,7 +570,8 @@ class dictionary_attack_page(tk.Frame):
             self,
             height = 15,
             width  = 57,
-        ).grid(row=1, column=0)
+        )
+        self.output_box.grid(row=1, column=0)
 
         sys.stdout = StringIO()
         network_dictionary_attack.main(["", self.target, self.wordlist])
