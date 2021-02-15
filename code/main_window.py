@@ -141,7 +141,7 @@ class network_page(tk.Frame):
             self.back_button = tk.Button(
                 self,
                 text = "Go Back",
-                command = lambda: self.master.change_frame(main_page)
+                command = lambda: self.master.change_frame(network_list_opts_page)
             ).grid(row=2, column=0)
             
             self.scrollbar = tk.Scrollbar(
@@ -175,7 +175,7 @@ class network_page(tk.Frame):
             self.back_button = tk.Button(
                 self,
                 text = "Go Back",
-                command = lambda: self.master.change_frame(main_page)
+                command = lambda: self.master.change_frame(network_list_opts_page)
             ).pack()
 
 class bluetooth_opt_page(tk.Frame):
