@@ -136,22 +136,33 @@ class network_page(tk.Frame):
             self.main_label = tk.Label(
                 self,
                 text = "Network List"
-            ).pack()
+            ).grid(row=0, column=0)
 
             self.back_button = tk.Button(
                 self,
                 text = "Go Back",
                 command = lambda: self.master.change_frame(main_page)
-            ).pack()
+            ).grid(row=2, column=0)
+            
+            self.scrollbar = tk.Scrollbar(
+                self,
+            )
+            self.scrollbar.grid(row=1,column=1, sticky='nsew')
+
+            self.output_box = tk.Text(
+                self,
+                height = 15,
+                width  = 57,
+                yscrollcommand = self.scrollbar.set #This sets the position of the scrollbar
+            )
+            self.output_box.grid(row=1, column=0)
+            self.scrollbar['command'] = self.output_box.yview #This allows the scrollbar to scroll the textbox
 
             #Used to collect output of network_list. Sets stdout to StringIO object, gets
             #value from that object, and resets stdout again. Results are displayed 
             sys.stdout = StringIO()
             network_list.main([""])
-            self.output = tk.Label(
-                self,
-                text = sys.stdout.getvalue()
-            ).pack()
+            self.output_box.insert(tk.END, sys.stdout.getvalue())
             sys.stdout = sys.__stdout__
         else:
             #User has selected output file, less info to display
@@ -228,23 +239,30 @@ class bluetooth_page(tk.Frame):
 
     def create_window(self):
         if self.output is None:
-            self.main_label = tk.Label(
+            #Create the scrollbar
+            self.scrollbar = tk.Scrollbar(
                 self,
-                text = "Bluetooth Devices"
-            ).pack()
+            )
+            self.scrollbar.grid(row=1,column=1, sticky='nsew')
+
+            self.output_box = tk.Text(
+                self,
+                height = 15,
+                width  = 57,
+                yscrollcommand = self.scrollbar.set #This sets the position of the scrollbar
+            )
+            self.output_box.grid(row=1, column=0)
+            self.scrollbar['command'] = self.output_box.yview #This allows the scrollbar to scroll the textbox
 
             self.back_button = tk.Button(
                 self,
                 text = "Go Back",
                 command = lambda: self.master.change_frame(bluetooth_opt_page)
-            ).pack()
+            ).grid(row=2, column=0)
 
             sys.stdout = StringIO()
             bluetooth_list.main([])
-            self.display_results = tk.Label(
-                self,
-                text = sys.stdout.getvalue()
-            ).pack()
+            self.output_box.insert(tk.END, sys.stdout.getvalue())
             sys.stdout = sys.__stdout__
         else:
             self.main_label = tk.Label(
