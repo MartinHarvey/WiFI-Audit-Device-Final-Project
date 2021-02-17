@@ -4,14 +4,14 @@ import sys
 import ipaddress
 import threading
 import time
-from scapy.all import IP, ICMP, sr
+from scapy.all import IP, ICMP, sr, arping
 
 def port_scan(target, start_port, end_port):
     ports_found = 0
     #iterate across every port between the start port and end port
     for port in range(start_port, (end_port+1)):
         scan_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        scan_socket.settimeout(2)
+        scan_socket.settimeout(0.5)
         if(scan_socket.connect_ex((target, port)) == 0):
             ports_found += 1
             
@@ -41,7 +41,7 @@ def port_scan(target, start_port, end_port):
 def http_banner(target, port):
     host = target + ":" + str(port)
     req_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    req_socket.settimeout(20)
+    req_socket.settimeout(3)
     req_socket.connect((target, port))
     req_socket.send(bytes("GET / HTTP/1.1\r\nHost: "+ host +" \r\n\r\n", "utf-8"))
     resp = req_socket.recv(4096)
@@ -53,6 +53,7 @@ def http_banner(target, port):
 #Works for FTP and SSH so far. Just connects and waits for 4096 bytes of a response
 def generic_banner(target, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(3)
     sock.connect((target, port))
     response = sock.recv(4096).decode()
     print("|    " + response)
@@ -62,6 +63,7 @@ def generic_banner(target, port):
 #do not work with UTF-16. Going to use raw bytes for now
 def telnet_banner(target, port):
     telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    telnet_socket.settimeout(3)
     telnet_socket.connect((target, port))
     response = telnet_socket.recv(1024)
     print("|    " + str(response))
@@ -69,12 +71,24 @@ def telnet_banner(target, port):
 def scapy_ping(target):
     #scapy does not play nice with the loopback interface, so you cant
     #ping localhost/127.0.0.1 with scapy packets
-    if(target == "127.0.0.1" or target == "localhost"):
-        return True
+    try:
+        if(target == "127.0.0.1" or target == "localhost"):
+            return True
     
-    icmp_packet = IP(dst=target)/ICMP()
-    succ, fail  = sr(icmp_packet, verbose=False, timeout=5)
-    return (len(succ) == 1 and len(fail) == 0)
+        icmp_packet = IP(dst=target)/ICMP()
+        succ, fail  = sr(icmp_packet, verbose=False, timeout=5)
+        return (len(succ) == 1 and len(fail) == 0)
+    except:
+        return False
+def ARP_ping(address):
+    try: 
+        response, failed = arping(address, verbose=False)
+        alive_hosts = []
+        for x in range(len(response)):
+            alive_hosts.append(response[x][1].psrc)
+        return alive_hosts
+    except socket.gaierror:
+        return []
 
 def main(args): 
     start = time.time()
@@ -93,6 +107,7 @@ def main(args):
     except (IndexError, ValueError):
         print("Require an ip address, a start port, and a end port")
         return 0
+    '''
     # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
     # CIDR_hosts is empty, then the input (target) is a single IP address 
     try:
@@ -101,23 +116,13 @@ def main(args):
         #ip_network will raise a ValueError if target isnt a IPv4 or IPv6 address. This means user can still input 
         #host names or URLs etc
         CIDR_hosts = []
-    if(CIDR_hosts != []):
-        for addr in CIDR_hosts:
-            #Each address in CIDR_hosts is not stored as a string, and since we need to use strings, we convert
-            addr = str(addr)
-            # Check if host is online by pinging it and run a port scan if so
-            if(scapy_ping(addr)):
-                print(addr + " is online")
-                #Extra code that can make the program wait for the last port scan to finish
-                #before beginning the next port scan on the new host. Unsure if it makes any
-                #difference, so its currently commmented out. More research required
-                try:
-                    scan_thread.join()
-                except:
-                    pass
-                #Create a new thread to run the port scan in the background
-                scan_thread = threading.Thread(target=port_scan, args=(addr, start_port, end_port,))
-                scan_thread.start()
+    '''
+    alive_hosts = ARP_ping(target)
+    #print(alive_hosts)
+    if(len(alive_hosts)>0):
+        for addr in alive_hosts:
+            print(addr + " is online")
+            port_scan(addr, start_port, end_port)
     else:
         if(scapy_ping(target)):
                 print(target + " is online")

@@ -37,8 +37,7 @@ def test_ftp():
 
 def test_bad_input():
     sys.stdout = open('temp.txt', 'w')
-    with pytest.raises(SystemExit) as e:
-        port_scanner.main(["", "localhost", "asdasd", "1000"])
+    port_scanner.main(["", "localhost", "asdasd", "1000"])
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
     assert "Require an ip address, a start port, and a end port" in output

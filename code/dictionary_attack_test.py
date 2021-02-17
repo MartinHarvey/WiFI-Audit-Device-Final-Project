@@ -5,8 +5,7 @@ import sys
 
 def test_missing_input():
     sys.stdout = open('temp.txt', 'w')
-    with pytest.raises(SystemExit) as e:
-        network_dictionary_attack.main(["", "Network Name"])
+    network_dictionary_attack.main(["", "Network Name"])
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
     assert "Need to supply a network SSID, a password list" in output
@@ -14,8 +13,7 @@ def test_missing_input():
 
 def test_bad_list_path():
     sys.stdout = open('temp.txt', 'w')
-    with pytest.raises(SystemExit) as e:
-        network_dictionary_attack.main(["", "Network Name", "This-file-doesnt-exist"])
+    network_dictionary_attack.main(["", "Network Name", "This-file-doesnt-exist"])
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
     assert "Wordlist supplied not found" in output

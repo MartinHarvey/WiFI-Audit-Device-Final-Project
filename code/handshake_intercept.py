@@ -31,7 +31,11 @@ def main(args):
     set_channel(channel)
     print("Now beginning to sniff")
     try:
-        packets = sniff(iface='wlan0mon', filter="ether proto 0x888e or wlan type mgt subtype auth", prn= lambda packet: wrpcap(outpath, packet, append=True))
+        packets = sniff(
+            iface='wlan0mon', 
+            filter="ether proto 0x888e or wlan type mgt subtype auth", 
+            prn= lambda packet: wrpcap(outpath, packet, append=True)
+            )
         print(packets)
     except OSError:
         print("No wireless device exists")
