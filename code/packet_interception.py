@@ -10,8 +10,7 @@ def add_promiscuous(iface):
 def rem_promiscuous(iface):
     subprocess.run(["ifconfig", iface, "-promisc"])
 #gets given a single packet, appends it to a pcap file at the output path
-def savepcap(packet, output_path):
-    wrpcap(output_path, packet, append=True)
+
 
 def main(args):
     try:
@@ -33,10 +32,18 @@ def main(args):
 
     add_promiscuous(iface)
     if(count_num > 0):
-        sniff(filter='', prn=lambda p: savepcap(p, output), store=0, count=count_num)
-
+        sniff(
+            prn=lambda p: wrpcap(output, p, append=True), 
+            store=0, 
+            count=count_num
+            )
     else:
-        sniff(filter='', prn=lambda p: savepcap(p, output), store=0)
+        sniff(
+            prn=lambda p: wrpcap(output, p, append=True), 
+            store=0
+            )
+    
+    rem_promiscuous(iface)
 
 
 if __name__ == "__main__":
