@@ -6,7 +6,7 @@ import pytest
 def test_localhost():
     #setup
     sys.stdout = open('temp.txt', 'w')
-    port_scanner.main(["", "localhost", "0", "1000"])    
+    port_scanner.main("localhost", "0", "1000")    
     sys.stdout = sys.__stdout__
     output = open("temp.txt", 'r').read()
     #assertions for tests
@@ -37,7 +37,7 @@ def test_ftp():
 
 def test_bad_input():
     sys.stdout = open('temp.txt', 'w')
-    port_scanner.main(["", "localhost", "asdasd", "1000"])
+    port_scanner.main('localhost', "asdasd", 1000)
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
     assert "Require an ip address, a start port, and a end port" in output

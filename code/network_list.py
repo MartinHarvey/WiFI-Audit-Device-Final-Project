@@ -1,14 +1,16 @@
 import subprocess
 import sys
 
-def main(args):
-    try:
-        output = open(args[1], 'w')
-        sys.stdout = output
-    except IndexError:
-        output = None
+def main(output=None):
+    if (output is not None):
+        sys.stdout = open(output, 'w')
     proc = subprocess.Popen(["nmcli","-f", "BSSID,SSID,CHAN,SIGNAL,SECURITY" ,"dev", "wifi"], stdout=subprocess.PIPE)
     print(proc.stdout.read().decode())
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        output = sys.argv[1]
+    except:
+        output = None
+    
+    main(output)

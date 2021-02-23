@@ -15,7 +15,7 @@ def port_scan(target, start_port, end_port):
         if(scan_socket.connect_ex((target, port)) == 0):
             ports_found += 1
             
-            #CHecking if port tends to host certain protocols
+            #Checking if port tends to host certain protocols
             try:
                 port_type = socket.getservbyport(port, 'tcp')
                 print("[!]Open Port - " + str(port) + "/TCP. Commonly used for " + port_type)
@@ -82,6 +82,9 @@ def scapy_ping(target):
         return False
 def ARP_ping(address):
     try: 
+        if(address == "127.0.0.1" or address == "localhost"):
+            return [address]
+
         response, failed = arping(address, verbose=False)
         alive_hosts = []
         for x in range(len(response)):
@@ -90,35 +93,21 @@ def ARP_ping(address):
     except socket.gaierror:
         return []
 
-def main(args): 
+def main(target=None, start_port=None, end_port=None, output_file=None): 
     start = time.time()
     #Get the file to redirect the output to if the user has supplied a path
-    try:
-        output_file = args[4]
+    if(output_file is not None):
         sys.stdout = open(output_file, 'w')
-    except IndexError:
-        #stdout will already be normal stdout, so no need to do anything
-        pass
-   
+
+    #Check if inputs are there
     try:
-        target = args[1]
-        start_port = int(args[2])
-        end_port   = int(args[3])
-    except (IndexError, ValueError):
+        target  = str(target)
+        start_port = int(start_port)
+        end_port   = int(end_port)
+    except:
         print("Require an ip address, a start port, and a end port")
         return 0
-    '''
-    # CIDR_hosts holds all the possible addresses in a CIDR block inputted by the user. If the
-    # CIDR_hosts is empty, then the input (target) is a single IP address 
-    try:
-        CIDR_hosts = list(ipaddress.ip_network(target).hosts())
-    except ValueError:
-        #ip_network will raise a ValueError if target isnt a IPv4 or IPv6 address. This means user can still input 
-        #host names or URLs etc
-        CIDR_hosts = []
-    '''
     alive_hosts = ARP_ping(target)
-    #print(alive_hosts)
     if(len(alive_hosts)>0):
         for addr in alive_hosts:
             print(addr + " is online")
@@ -131,4 +120,12 @@ def main(args):
     print("Time Taken " + str(end - start))
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        target     = sys.argv[1]
+        start_port = int(sys.argv[2])
+        end_port   = int(sys.argv[3])
+    except (IndexError, ValueError):
+        print("Require an ip address, a start port, and a end port")
+        exit()
+
+    main(target, start_port, end_port)

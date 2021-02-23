@@ -12,23 +12,12 @@ def rem_promiscuous(iface):
 #gets given a single packet, appends it to a pcap file at the output path
 
 
-def main(args):
-    try:
-        iface = args[3]
-    except IndexError:
-        # If the user hasnt set a interface to listen on, just use the interface
-        # scapy is using by default. 
-        iface = conf.iface
+def main(output, count_num=0, iface=None): 
+    iface = conf.iface
     try: 
-        count_num = int(args[2])
-    except IndexError:
-        count_num = 0
-    
-    try: 
-        output = args[1]
+        count_num = int(count_num)
     except:
-        print("Need a file to output packets to")
-        exit(0)
+        count_num = 0
 
     add_promiscuous(iface)
     if(count_num > 0):
@@ -47,4 +36,18 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try: 
+        output = sys.argv[1]
+    except:
+        print("Need a file to output packets tom, ")
+        exit(0)
+
+    try:
+        count = sys.argv[2]
+    except:
+        count = 0
+    try:
+        iface = sys.argv[3]
+    except:
+        iface = None
+    main(output, count, iface)

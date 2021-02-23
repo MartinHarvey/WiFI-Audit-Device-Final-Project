@@ -161,12 +161,12 @@ class network_page(tk.Frame):
             #Used to collect output of network_list. Sets stdout to StringIO object, gets
             #value from that object, and resets stdout again. Results are displayed 
             sys.stdout = StringIO()
-            network_list.main([""])
+            network_list.main()
             self.output_box.insert(tk.END, sys.stdout.getvalue())
             sys.stdout = sys.__stdout__
         else:
             #User has selected output file, less info to display
-            network_list.main(["", self.output])
+            network_list.main(self.output)
             self.main_label = tk.Label(
                 self,
                 text = "Network List saved to \n " + self.output
@@ -261,7 +261,7 @@ class bluetooth_page(tk.Frame):
             ).grid(row=2, column=0)
 
             sys.stdout = StringIO()
-            bluetooth_list.main([])
+            bluetooth_list.main()
             self.output_box.insert(tk.END, sys.stdout.getvalue())
             sys.stdout = sys.__stdout__
         else:
@@ -269,7 +269,7 @@ class bluetooth_page(tk.Frame):
                 self,
                 text = "Bluetooth Devices"
             ).pack()
-            bluetooth_list.main(["", self.output])
+            bluetooth_list.main(self.output)
             self.back_button = tk.Button(
                 self,
                 text = "Go Back",
@@ -393,7 +393,7 @@ class port_scan_results(tk.Frame):
 
             #Redirection of stdout to screen is done the same in other pages
             sys.stdout = StringIO()
-            port_scanner.main(["", self.addr, self.sport, self.eport])
+            port_scanner.main(self.addr, self.sport, self.eport)
             self.output_box.insert(tk.END, sys.stdout.getvalue())
             sys.stdout = sys.__stdout__
             
@@ -404,7 +404,7 @@ class port_scan_results(tk.Frame):
             ).grid(row=2, column=0)
         else:
             #If user chose to output to file
-            port_scanner.main(["", self.addr, self.sport, self.eport, self.output])
+            port_scanner.main(self.addr, self.sport, self.eport, self.output)
             self.out_label = tk.Label(
                 self,
                 text = "Port scan results outputted to \n" + self.output
@@ -490,7 +490,7 @@ class packet_sniff_page(tk.Frame):
             #to run indefinitely
             self.packet_sniff_process = Process(
                 target=packet_interception.main, 
-                args=(["", self.output, self.count],)
+                args=(self.output, self.count)
                 ) #Create the process
             self.packet_sniff_process.start() #start process
             self.page_label = tk.Label(
@@ -592,7 +592,7 @@ class dictionary_attack_page(tk.Frame):
         self.output_box.grid(row=1, column=0)
 
         sys.stdout = StringIO()
-        network_dictionary_attack.main(["", self.target, self.wordlist])
+        network_dictionary_attack.main(self.target, self.wordlist)
         self.output_box.insert(tk.END, sys.stdout.getvalue())
         sys.stdout = sys.__stdout__
 

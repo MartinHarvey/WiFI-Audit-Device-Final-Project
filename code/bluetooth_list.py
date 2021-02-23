@@ -2,12 +2,10 @@ import bluetooth
 import sys
 
 
-def main(args):
-	try:
-		sys.stdout = open(args[1], 'w')
-		print(sys.argv[1])
-	except IndexError:
-		pass
+def main(output=None):
+	if (output is not None):
+		sys.stdout = open(output, 'w')
+	
 	try:
 		devices = bluetooth.discover_devices(lookup_names=True)
 		print("Address           Name") 
@@ -17,5 +15,9 @@ def main(args):
 		print("No bluetooth hardware to use")
 
 if __name__ == "__main__":
-	main(sys.argv)
+	try:
+		output = sys.argv[1]
+	except IndexError:
+		output = None
+	main(output)
 

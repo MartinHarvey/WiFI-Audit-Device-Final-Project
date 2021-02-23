@@ -6,7 +6,7 @@ import mimetypes
 from scapy.all import conf
 
 def test_file():
-    packet_interception.main(["", "temp.pcap", "5"])
+    packet_interception.main('temp.pcap', 5)
     assert os.path.isfile("temp.pcap")
     assert ('application/vnd.tcpdump.pcap', None) == mimetypes.guess_type('temp.pcap')
     os.remove('temp.pcap')
