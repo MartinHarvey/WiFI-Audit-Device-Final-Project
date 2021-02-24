@@ -7,12 +7,13 @@ def add_promiscuous(iface):
     subprocess.run(["ifconfig", iface, "up"])
     subprocess.run(["ifconfig", iface, "promisc"])
 
+#Removes the promiscous permissions from the iface
 def rem_promiscuous(iface):
     subprocess.run(["ifconfig", iface, "-promisc"])
-#gets given a single packet, appends it to a pcap file at the output path
 
 
-def main(output, count_num=0, iface=None): 
+def main(output, count_num=0): 
+    #sets iface to scapys default interface
     iface = conf.iface
     try: 
         count_num = int(count_num)

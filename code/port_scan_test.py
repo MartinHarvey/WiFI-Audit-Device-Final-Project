@@ -14,10 +14,12 @@ def test_localhost():
     #teardown
     os.remove("temp.txt")
 
+#Just pings wikipedia and sees what the output is
 def test_ping():
     res = port_scanner.scapy_ping("en.wikipedia.org")
     assert res
 
+#See if a successful HTTP response is gotten from an external website
 def test_http():
     sys.stdout = open('http_temp.txt', 'w')
     port_scanner.http_banner('en.wikipedia.org', 80)
@@ -26,6 +28,8 @@ def test_http():
     assert "HTTP/1.1" in output
     os.remove('http_temp.txt')
 
+#Check if a successful FTP response is recieved. generic banner is also
+#used for SSH
 def test_ftp():
     sys.stdout = open('temp.txt', 'w')
     port_scanner.generic_banner('ftp.cs.brown.edu', 21)
@@ -35,6 +39,7 @@ def test_ftp():
     assert "220" in output
     os.remove('temp.txt')
 
+#Checks for error output on poor input
 def test_bad_input():
     sys.stdout = open('temp.txt', 'w')
     port_scanner.main('localhost', "asdasd", 1000)

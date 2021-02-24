@@ -80,13 +80,20 @@ def scapy_ping(target):
         return (len(succ) == 1 and len(fail) == 0)
     except:
         return False
+
+
 def ARP_ping(address):
+    #scapy is not a fan of the loopback interface. localhost is always gonna be running, so 
+    # so we just return the address in an array
     try: 
         if(address == "127.0.0.1" or address == "localhost"):
             return [address]
 
+        #ping address, put recieved ARP response packets into response
         response, failed = arping(address, verbose=False)
         alive_hosts = []
+        #iterate through the response packets and get the address and append to the alive_hosts
+        #array. 
         for x in range(len(response)):
             alive_hosts.append(response[x][1].psrc)
         return alive_hosts
@@ -99,7 +106,7 @@ def main(target=None, start_port=None, end_port=None, output_file=None):
     if(output_file is not None):
         sys.stdout = open(output_file, 'w')
 
-    #Check if inputs are there
+    #Check if inputs are there. CHecks types too
     try:
         target  = str(target)
         start_port = int(start_port)
@@ -107,7 +114,9 @@ def main(target=None, start_port=None, end_port=None, output_file=None):
     except:
         print("Require an ip address, a start port, and a end port")
         return 0
+    #ARP_ping returns a array of alive addresses
     alive_hosts = ARP_ping(target)
+    #If we get alive hosts back, run through the array. If not, try to ping the target
     if(len(alive_hosts)>0):
         for addr in alive_hosts:
             print(addr + " is online")
@@ -120,6 +129,7 @@ def main(target=None, start_port=None, end_port=None, output_file=None):
     print("Time Taken " + str(end - start))
 
 if __name__ == "__main__":
+    #Get any input from command line
     try:
         target     = sys.argv[1]
         start_port = int(sys.argv[2])

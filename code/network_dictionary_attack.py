@@ -2,6 +2,7 @@ import sys
 from wireless import Wireless
 
 def main(SSID=None, Wordlist=None):
+    #Some typechecking etc
     try:
         SSID = str(SSID)
     except:
@@ -26,6 +27,7 @@ def main(SSID=None, Wordlist=None):
     print("Password not in dictionary")
 
 if __name__ == "__main__":
+    #Checking if we have the necessary arguments from the command line
     try:
         SSID = sys.argv[1]
         dictionary = sys.argv[2]

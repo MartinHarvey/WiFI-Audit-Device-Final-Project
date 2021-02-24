@@ -1,5 +1,4 @@
-from scapy.all import *
-from scapy.contrib import *
+from scapy.all import sniff, wrpcap
 import sys
 import subprocess
 
@@ -27,10 +26,11 @@ def set_channel(channel):
     subprocess.run(["iwconfig", "wlan0mon", "channel", str(channel)])
 
 def main(outpath, channel):
+    #Some type checking.
     try:
         outpath = str(outpath)
         channel = int(channel)
-    except IndexError:
+    except TypeError:
         print("Need a output file and a wifi channel to listen on")
         return 0
     
@@ -44,9 +44,11 @@ def main(outpath, channel):
         #sniff for frames on the wlan0mon interface
         #filter defines a BPF filter for just capturing 802.11 Auth frames
         #and EAPOL key material frames
+        #BPF filters are very fast. Way quicker than capturing every frame and use scapy to check
+        #if they have certain layers/frame types. 
         #prn is the callback thats run on capturing a frame. Saves it to the user_supplied file
         sniff(
-            iface='wlan0mon', 
+            iface='wlan0mon',
             filter="ether proto 0x888e or wlan type mgt subtype auth", 
             prn= lambda packet: wrpcap(outpath, packet, append=True)
             )
