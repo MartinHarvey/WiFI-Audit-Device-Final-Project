@@ -26,13 +26,13 @@ def create_iface():
 def set_channel(channel):
     subprocess.run(["iwconfig", "wlan0mon", "channel", str(channel)])
 
-def main(args):
+def main(outpath, channel):
     try:
-        outpath = args[1]
-        channel = args[2]
+        outpath = str(outpath)
+        channel = int(channel)
     except IndexError:
         print("Need a output file and a wifi channel to listen on")
-        exit(0)
+        return 0
     
     #If no mon interface, create one
     if(check_iface()):
@@ -55,4 +55,11 @@ def main(args):
         return 0
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        outpath = sys.argv[1]
+        channel = sys.argv[2]
+    except IndexError:
+        print("Need a output file and a wifi channel to listen on")
+        exit(0)
+
+    main(outpath, channel)

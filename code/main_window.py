@@ -492,6 +492,7 @@ class packet_sniff_page(tk.Frame):
                 target=packet_interception.main, 
                 args=(self.output, self.count)
                 ) #Create the process
+            self.packet_sniff_process.daemon = True #Daemon process will exit on termination of window. 
             self.packet_sniff_process.start() #start process
             self.page_label = tk.Label(
                 self,
@@ -670,18 +671,22 @@ class handshake_intercept_page(tk.Frame):
             self,
             text = "Handshake Interception \n saved to \n" + self.output
         ).pack()
+        # This process runs the handshake interceptor. 
         self.interception_process = Process(
             target=handshake_intercept.main,
-            args=(["", self.output, self.channel],)
+            args=(self.output, self.channel,)
         )
+        self.interception_process.daemon = True # Daemon processes will exit when the window is killed
         self.interception_process.start()
 
+        # When clicked, the handshake sniff process associated to the window will be terminated
         self.kill_process_button = tk.Button(
             self,
             text = "Stop Handshake Interception",
             command = lambda: self.interception_process.terminate()
         ).pack(side=tk.RIGHT)
 
+        #Back button, same as the rest
         self.back_button = tk.Button(
             self,
             text = "Go Back",
