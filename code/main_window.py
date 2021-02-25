@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import tkinter as tk
 import tkinter.filedialog
 import network_list
@@ -70,6 +72,12 @@ class main_page(tk.Frame):
             command = lambda: self.master.change_frame(handshake_intercept_opt_page)
         ).grid(row=2, column=1, sticky="ew")
 
+        #Quits app entirely
+        self.quit_button = tk.Button(
+            self,
+            text = "Quit",
+            command = lambda: app.destroy()
+        ).grid(row=3, column=1)
 class network_list_opts_page(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -698,6 +706,6 @@ class handshake_intercept_page(tk.Frame):
 if __name__ == "__main__":
     #Create app object, sets its size and run it
     app = app()
-    app.geometry("480x320")
+    app.attributes("-fullscreen", True)
     app.mainloop() 
 
