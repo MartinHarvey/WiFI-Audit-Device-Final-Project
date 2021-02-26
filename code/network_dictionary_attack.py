@@ -18,12 +18,16 @@ def main(SSID=None, Wordlist=None):
     #to connect to the network with the user supplied SSID. If successful
     #(res is true) then display to screen and quit checking. 
     for network_password in dictionary:
+        #print(network_password)
+        network_password = network_password.rstrip()
+        print(network_password)
+        '''
         wireless = Wireless()
         res = wireless.connect(ssid=SSID, password=network_password)
         if(res):
             print("Success - Password for " + SSID + " is " + network_password)
             return 0
-        
+        '''
     print("Password not in dictionary")
 
 if __name__ == "__main__":
