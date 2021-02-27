@@ -1,5 +1,6 @@
 import sys
 import subprocess
+import network_list
 
 def main(SSID=None, Wordlist=None):
     #Some typechecking etc
@@ -14,6 +15,9 @@ def main(SSID=None, Wordlist=None):
     except:
         print("Wordlist supplied not found")
         return 0
+
+    network_list.main()
+
     #For each password in the dictionary, check the password by attempting
     #to connect to the network with the user supplied SSID. If successful
     #(res is true) then display to screen and quit checking. 
