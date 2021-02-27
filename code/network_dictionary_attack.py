@@ -24,7 +24,7 @@ def main(SSID=None, Wordlist=None):
             ["nmcli", "device", "wifi", "con", SSID, "password", network_password],
             stdout=subprocess.PIPE
             )
-        if("success" in connect_command.read().decode()):
+        if("success" in connect_command.stdout.read().decode()):
             print("[!] Success! SSID: " + SSID + " Password: " + network_password)
             return 0
     print("Password not in dictionary")
