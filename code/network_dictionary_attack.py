@@ -25,7 +25,7 @@ def main(SSID=None, Wordlist=None):
         #print(network_password)
         network_password = network_password.rstrip()
         connect_command = subprocess.Popen(
-            ["nmcli", "device", "wifi", "con", SSID, "password", network_password],
+            ["sudo", "nmcli", "device", "wifi", "con", SSID, "password", network_password],
             stdout=subprocess.PIPE
             )
         if("success" in connect_command.stdout.read().decode()):
