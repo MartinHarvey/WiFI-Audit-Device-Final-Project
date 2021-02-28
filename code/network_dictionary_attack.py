@@ -16,11 +16,9 @@ def main(SSID=None, Wordlist=None):
         print("Wordlist supplied not found")
         return 0
 
-    network_list.main()
-
     #For each password in the dictionary, check the password by attempting
-    #to connect to the network with the user supplied SSID. If successful
-    #(res is true) then display to screen and quit checking. 
+    #to connect to the network with the user supplied SSID. The returned string
+    #from nmcli will have "success" in it if the password was correct
     for network_password in dictionary:
         #print(network_password)
         network_password = network_password.rstrip()

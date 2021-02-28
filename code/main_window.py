@@ -77,7 +77,7 @@ class main_page(tk.Frame):
             self,
             text = "Quit",
             command = lambda: app.destroy()
-        ).grid(row=3, column=1)
+        ).grid(row=3, column=1, sticky="ew")
 class network_list_opts_page(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -171,6 +171,7 @@ class network_page(tk.Frame):
             sys.stdout = StringIO()
             network_list.main()
             self.output_box.insert(tk.END, sys.stdout.getvalue())
+            self.output_box.config(state='disabled')
             sys.stdout = sys.__stdout__
         else:
             #User has selected output file, less info to display
@@ -271,6 +272,7 @@ class bluetooth_page(tk.Frame):
             sys.stdout = StringIO()
             bluetooth_list.main()
             self.output_box.insert(tk.END, sys.stdout.getvalue())
+            self.output_box.config(state='disabled')
             sys.stdout = sys.__stdout__
         else:
             self.main_label = tk.Label(
@@ -403,6 +405,7 @@ class port_scan_results(tk.Frame):
             sys.stdout = StringIO()
             port_scanner.main(self.addr, self.sport, self.eport)
             self.output_box.insert(tk.END, sys.stdout.getvalue())
+            self.output_box.config(state='disabled')
             sys.stdout = sys.__stdout__
             
             self.back_button = tk.Button(
@@ -603,6 +606,7 @@ class dictionary_attack_page(tk.Frame):
         sys.stdout = StringIO()
         network_dictionary_attack.main(self.target, self.wordlist)
         self.output_box.insert(tk.END, sys.stdout.getvalue())
+        self.output_box.config(state='disabled')
         sys.stdout = sys.__stdout__
 
         self.back_button = tk.Button(
