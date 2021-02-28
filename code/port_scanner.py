@@ -75,7 +75,7 @@ def scapy_ping(target):
         if(target == "127.0.0.1" or target == "localhost"):
             return True
     
-        icmp_packet = IP(dst=target)/ICMP()
+        icmp_packet = IP(dst=target)/ICMP(id=101)
         succ, fail  = sr(icmp_packet, verbose=False, timeout=5)
         return (len(succ) == 1 and len(fail) == 0)
     except:
