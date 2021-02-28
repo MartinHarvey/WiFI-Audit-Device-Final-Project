@@ -21,6 +21,10 @@ def create_iface():
     #Makes sure the monitor interface is actually up and running
     subprocess.run(["ifconfig", "wlan0mon", "up"])
 
+def remove_iface():
+    #Stops monitor mode running on wlan0
+    subprocess.Popen(["airmon-ng", "stop", "wlan0"],stdout=subprocess.PIPE)
+
 #Need to set the interface to listen on a specific channel
 def set_channel(channel):
     subprocess.run(["iwconfig", "wlan0mon", "channel", str(channel)])
