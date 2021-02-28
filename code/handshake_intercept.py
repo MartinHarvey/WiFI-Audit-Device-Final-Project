@@ -23,7 +23,8 @@ def create_iface():
 
 def remove_iface():
     #Stops monitor mode running on wlan0
-    subprocess.Popen(["airmon-ng", "stop", "wlan0"],stdout=subprocess.PIPE)
+    subprocess.run(["sudo", "airmon-ng", "stop", "wlan0mon"])
+    subprocess.run(["sudo", "NetworkManager"])
 
 #Need to set the interface to listen on a specific channel
 def set_channel(channel):
