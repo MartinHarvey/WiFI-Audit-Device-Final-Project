@@ -28,6 +28,13 @@ def test_http():
     assert "HTTP/1.1" in output
     os.remove('http_temp.txt')
 
+    sys.stdout = open('http_temp.txt', 'w')
+    port_scanner.main('en.wikipedia.org', 80, 81)
+    sys.stdout = sys.__stdout__
+    output = open('http_temp.txt', 'r').read()
+    assert "HTTP/1.1" in output
+    os.remove('http_temp.txt')
+
 #Check if a successful FTP response is recieved. generic banner is also
 #used for SSH
 def test_ftp():
@@ -47,3 +54,14 @@ def test_bad_input():
     output = open('temp.txt', 'r').read()
     assert "Require an ip address, a start port, and a end port" in output
     os.remove('temp.txt')
+
+def test_normal_scan():
+    #setup
+    sys.stdout = open('temp.txt', 'w')
+    port_scanner.main("192.168.0.1", "0", "1000")    
+    sys.stdout = sys.__stdout__
+    output = open("temp.txt", 'r').read()
+    #assertions for tests
+    assert "192.168.0.1 is online" in output
+    #teardown
+    os.remove("temp.txt")
