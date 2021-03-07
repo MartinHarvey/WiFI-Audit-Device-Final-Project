@@ -137,5 +137,9 @@ if __name__ == "__main__":
     except (IndexError, ValueError):
         print("Require an ip address, a start port, and a end port")
         exit()
+    try:
+        output = sys.argv[4]
+    except:
+        output = None
 
-    main(target, start_port, end_port)
+    main(target, start_port, end_port, output)

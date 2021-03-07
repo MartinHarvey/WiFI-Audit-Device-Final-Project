@@ -40,15 +40,12 @@ if __name__ == "__main__":
     try: 
         output = sys.argv[1]
     except:
-        print("Need a file to output packets tom, ")
+        print("Need a file to output packets to")
         exit(0)
 
     try:
         count = sys.argv[2]
     except:
         count = 0
-    try:
-        iface = sys.argv[3]
-    except:
-        iface = None
-    main(output, count, iface)
+
+    main(output, count)

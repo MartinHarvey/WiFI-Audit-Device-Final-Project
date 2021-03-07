@@ -2,6 +2,7 @@ import port_scanner
 import os
 import sys
 import pytest
+import subprocess
 # Tests require active internet connection. Uses online resources like en.wikipedia.org or the localhost
 def test_localhost():
     #setup
@@ -65,3 +66,12 @@ def test_normal_scan():
     assert "192.168.0.1 is online" in output
     #teardown
     os.remove("temp.txt")
+
+#Test that the feature runs from the command line
+#This is a common test in other unit test files
+#Operates the same as the others. 
+def test_cli():
+    subprocess.run(["sudo", "python3", "port_scanner.py", "localhost", "0", "100", "out.txt"])
+    assert os.path.isfile('out.txt')
+    os.remove('out.txt')
+

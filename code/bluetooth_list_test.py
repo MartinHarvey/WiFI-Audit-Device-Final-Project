@@ -2,6 +2,7 @@ import bluetooth_list
 import os
 import sys
 import mimetypes
+import subprocess
 
 #Test if the default columns are printed out. 
 #Used to check if the most basic output is displayed after 
@@ -21,3 +22,12 @@ def test_file_type():
     assert os.path.isfile('temp.txt')
     assert ('text/plain', None) == mimetypes.guess_type('temp.txt')
     os.remove('temp.txt')
+
+#Test that the feature runs from the command line
+#Run it like you would from the cli and check that a output file is created
+def test_cli():
+    subprocess.run(["sudo", "python3", "bluetooth_list.py", "out.txt"])
+    assert os.path.isfile('out.txt')
+    os.remove('out.txt')
+
+
