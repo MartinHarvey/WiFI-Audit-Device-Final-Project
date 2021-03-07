@@ -13,7 +13,9 @@ def test_file_type():
 
 #Check if the basic output is present when a network is detected
 def test_columns():
-    network_list.main('temp.txt')
+    sys.stdout = open("temp.txt", "w")
+    network_list.main()
+    sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
     assert "SSID" in output
     assert "BSSID" in output

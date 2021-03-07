@@ -1,7 +1,6 @@
 import port_scanner
 import os
 import sys
-import pytest
 import subprocess
 # Tests require active internet connection. Uses online resources like en.wikipedia.org or the localhost
 def test_localhost():

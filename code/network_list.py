@@ -9,6 +9,7 @@ def main(output=None):
     proc = subprocess.Popen(["nmcli","-f", "BSSID,SSID,CHAN,SIGNAL,SECURITY" ,"dev", "wifi"], stdout=subprocess.PIPE)
     #Take the stdout, read it and decode it from hex to string
     print(proc.stdout.read().decode())
+    sys.stdout == sys.__stdout__
 
 if __name__ == "__main__":
     #Grab a path if provided from the command line
