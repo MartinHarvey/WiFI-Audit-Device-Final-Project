@@ -24,11 +24,4 @@ def test_columns():
     assert "SECURITY" in output
     os.remove('temp.txt')
 
-#Test that the feature runs from the command line
-#Similar test in bluetooth_list_test
-def test_cli():
-    subprocess.run(["sudo", "python3", "network_list.py", "out.txt"])
-    assert os.path.isfile('out.txt')
-    output = open('out.txt', 'r').read()
-    os.remove('out.txt')
 

@@ -23,11 +23,5 @@ def test_file_type():
     assert ('text/plain', None) == mimetypes.guess_type('temp.txt')
     os.remove('temp.txt')
 
-#Test that the feature runs from the command line
-#Run it like you would from the cli and check that a output file is created
-def test_cli():
-    subprocess.run(["sudo", "python3", "bluetooth_list.py", "out.txt"])
-    assert os.path.isfile('out.txt')
-    os.remove('out.txt')
 
 

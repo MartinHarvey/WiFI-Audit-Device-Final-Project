@@ -25,10 +25,5 @@ def test_promisc():
     output = proc.stdout.read()
     assert b"PROMISC" not in output
 
-#Test that the feature runs from the command line
-def test_cli():
-    subprocess.run(["sudo", "python3", "packet_interception.py", "out.pcap", "3"])
-    assert os.path.isfile('out.pcap')
-    os.remove('out.pcap')
 
 

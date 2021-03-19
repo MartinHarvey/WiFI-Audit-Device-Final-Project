@@ -66,11 +66,4 @@ def test_normal_scan():
     #teardown
     os.remove("temp.txt")
 
-#Test that the feature runs from the command line
-#This is a common test in other unit test files
-#Operates the same as the others. 
-def test_cli():
-    subprocess.run(["sudo", "python3", "port_scanner.py", "localhost", "0", "100", "out.txt"])
-    assert os.path.isfile('out.txt')
-    os.remove('out.txt')
 
