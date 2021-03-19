@@ -46,15 +46,6 @@ def test_ftp():
     assert "220" in output
     os.remove('temp.txt')
 
-def test_telnet():
-    sys.stdout = open('temp.txt', 'w')
-    port_scanner.telnet_banner('horizons.jpl.nasa.gov', 6775)
-    sys.stdout = sys.__stdout__
-    output = open('temp.txt', 'r').read()
-    #Check if FTP successful connection code is in output
-    assert b'\xff\xfb\x01' in output
-    os.remove('temp.txt')
-
 #Checks for error output on poor input
 def test_bad_input():
     sys.stdout = open('temp.txt', 'w')

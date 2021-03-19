@@ -58,16 +58,6 @@ def generic_banner(target, port):
     response = sock.recv(4096).decode()
     print("|    " + response)
 
-#On test VM response is garbled but seems to be valid UTF-16
-#Otherwise similar to generic_banner(). Other telnet services online return
-#do not work with UTF-16. Going to use raw bytes for now
-def telnet_banner(target, port):
-    telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    telnet_socket.settimeout(3)
-    telnet_socket.connect((target, port))
-    response = telnet_socket.recv(4096)
-    print("|    " + str(response))
-
 def scapy_ping(target):
     #scapy does not play nice with the loopback interface, so you cant
     #ping localhost/127.0.0.1 with scapy packets
