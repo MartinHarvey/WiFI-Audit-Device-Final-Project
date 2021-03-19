@@ -65,7 +65,7 @@ def telnet_banner(target, port):
     telnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     telnet_socket.settimeout(3)
     telnet_socket.connect((target, port))
-    response = telnet_socket.recv(1024)
+    response = telnet_socket.recv(4096)
     print("|    " + str(response))
 
 def scapy_ping(target):
