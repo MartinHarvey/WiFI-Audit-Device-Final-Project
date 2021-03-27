@@ -6,7 +6,11 @@ def main(output=None):
     if (output is not None):
         sys.stdout = open(output, 'w')
     #Run the process and save the stdout
-    proc = subprocess.Popen(["nmcli","-f", "BSSID,SSID,CHAN,SIGNAL,SECURITY" ,"dev", "wifi"], stdout=subprocess.PIPE)
+    # "-f BSSID,SSID,CHAN,SIGNAL,SECURITY" filters output to those columns
+    proc = subprocess.Popen(
+        ["nmcli","-f", "BSSID,SSID,CHAN,SIGNAL,SECURITY" ,"dev", "wifi"], 
+        stdout=subprocess.PIPE
+        )
     #Take the stdout, read it and decode it from hex to string
     print(proc.stdout.read().decode())
     sys.stdout == sys.__stdout__

@@ -537,11 +537,11 @@ class dictionary_attack_opt_page(tk.Frame):
             text = "Dictionary Attack Options"
         ).grid(row = 0, column=0)
 
+        #Label and button to open file dialog for wordlist
         self.wordlist_label = tk.Label(
             self,
             text = "Select Wordlist"
         ).grid(row=1, column=0)
-
         self.wordlist = None
         self.select_worlist_button = tk.Button(
             self,
@@ -549,6 +549,7 @@ class dictionary_attack_opt_page(tk.Frame):
             command = lambda: self.get_wordlist()
         ).grid(row=1, column=1)
 
+        #Label and entry for target SSID/Name
         self.target_label = tk.Label(
             self,
             text = "Target Network Name: "
@@ -558,12 +559,14 @@ class dictionary_attack_opt_page(tk.Frame):
         )
         self.target_entry.grid(row=2, column=1)
 
+        #Back button to go to main page
         self.back_button = tk.Button(
                 self,
                 text = "Go Back",
                 command = lambda: self.master.change_frame(main_page)
             ).grid(row=3, column=0)
 
+        #Create new page, run module as part of that. 
         self.run_button = tk.Button(
             self,
             text = "Run Dictionary Attack",
@@ -595,7 +598,7 @@ class dictionary_attack_page(tk.Frame):
             self,
             text = "Dictionary Attack Results"
         ).grid(row=0, column=0)
-
+        #Ouptut box will display output 
         self.output_box = tk.Text(
             self,
             height = 15,
@@ -603,12 +606,14 @@ class dictionary_attack_page(tk.Frame):
         )
         self.output_box.grid(row=1, column=0)
 
+        #Run the module and display the output to output_box
         sys.stdout = StringIO()
         network_dictionary_attack.main(self.target, self.wordlist)
         self.output_box.insert(tk.END, sys.stdout.getvalue())
         self.output_box.config(state='disabled')
         sys.stdout = sys.__stdout__
 
+        #Back button to options page
         self.back_button = tk.Button(
                 self,
                 text = "Go Back",
@@ -628,7 +633,8 @@ class handshake_intercept_opt_page(tk.Frame):
             self,
             text = "Handshake Interception Options"
         ).grid(row=0, column=0)
-    
+        
+        #Label and button for the file dialog
         self.output_label = tk.Label(
             self,
             text = "Choose output .pcap file",
@@ -638,6 +644,8 @@ class handshake_intercept_opt_page(tk.Frame):
             text = "Choose file",
             command = self.out_file
         ).grid(row=1, column=1)
+
+        #Label and entry field for the listen channel
         self.channel_label = tk.Label(
             self,
             text = "Choose WiFi channel to listen on"
@@ -647,11 +655,15 @@ class handshake_intercept_opt_page(tk.Frame):
         )
         self.channel_entry.grid(row=2, column=1)
         
+        #Button to go back to main page
         self.back_button = tk.Button(
                 self,
                 text = "Go Back",
                 command = lambda: self.master.change_frame(main_page)
             ).grid(row=3, column=0)
+
+        #Button to go to the output page
+        #i.e. run the module
         self.run_button = tk.Button(
             self,
             text = "Capture Handshakes",

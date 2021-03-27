@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 import socket
 import sys
-import ipaddress
-import threading
 import time
 from scapy.all import IP, ICMP, sr, arping
 
@@ -10,6 +8,7 @@ def port_scan(target, start_port, end_port):
     ports_found = 0
     #iterate across every port between the start port and end port
     for port in range(start_port, (end_port+1)):
+        #scan_socket is a TCP IPv4 socket
         scan_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         scan_socket.settimeout(0.5)
         if(scan_socket.connect_ex((target, port)) == 0):
@@ -25,9 +24,6 @@ def port_scan(target, start_port, end_port):
                 if("ftp" in port_type):
                     print("[*]Banner grabbing over FTP")
                     generic_banner(target, port)
-                if("telnet" in port_type):
-                    print("[*]Banner grabbing over telnet")
-                    telnet_banner(target, port)
                 if("ssh" in port_type):
                     print("[*]Banner grabbing over SSH")
                     generic_banner(target, port)
@@ -43,6 +39,7 @@ def http_banner(target, port):
     req_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     req_socket.settimeout(3)
     req_socket.connect((target, port))
+    #This is a basic HTTP get request to the / directory on the remote host 
     req_socket.send(bytes("GET / HTTP/1.1\r\nHost: "+ host +" \r\n\r\n", "utf-8"))
     resp = req_socket.recv(4096)
     resp = resp.decode().split('\r\n')
@@ -79,7 +76,8 @@ def ARP_ping(address):
         if(address == "127.0.0.1" or address == "localhost"):
             return [address]
 
-        #ping address, put recieved ARP response packets into response
+        #ping address, put recieved ARP response packets into response. failed is used to hold whatever 
+        # requests failed. 
         response, failed = arping(address, verbose=False)
         alive_hosts = []
         #iterate through the response packets and get the address and append to the alive_hosts

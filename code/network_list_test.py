@@ -17,6 +17,7 @@ def test_columns():
     network_list.main()
     sys.stdout = sys.__stdout__
     output = open('temp.txt', 'r').read()
+    #The basic output is each of these columns
     assert "SSID" in output
     assert "BSSID" in output
     assert "CHAN" in output
